@@ -1,12 +1,22 @@
 @import "tailwindcss";
 
 :root {
+  --color-maroon: #6b0f1a;
+  --color-maroon-hover: #8a1624;
 }
 
 @theme inline {
+  --color-primary: var(--color-maroon); /* maroon base */
+  --color-primary-hover: var(--color-maroon-hover); /* hover/active */
 }
-
 @media (prefers-color-scheme: dark) {
   :root {
+    --color-maroon: #4a0a12;
+    --color-maroon-hover: #a81e2e;
+  }
+
+  @theme inline {
+    --color-primary: #4a0a12; /* explicit dark-mode primary */
+    --color-primary-hover: #a81e2e; /* explicit dark-mode hover */
   }
 }

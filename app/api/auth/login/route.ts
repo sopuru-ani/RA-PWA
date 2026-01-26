@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
             httpOnly: true,
             secure: true,          // works since you said your dev server is HTTPS
             sameSite: 'lax',
-            path: '/',
             maxAge: 7 * 24 * 60 * 60 // 7 days
         });
 

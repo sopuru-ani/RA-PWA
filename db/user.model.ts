@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document, Model, InferSchemaType } from "mongoose";
 
 export interface IUser extends Document {
     fullName: string;
@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema<IUser>({
     authProvider: { type: String, required: true, enum: ['local', 'sso'], trim: true },
     providerId: String,
     community: { type: [String], default: [] },
-    assignment: { type: [String], defualt: [] },
+    assignment: { type: [String], default: [] },
     createdAt: { type: Date, required: true, default: Date.now },
     updatedAt: { type: Date, required: true, default: Date.now }
 });
@@ -35,3 +35,14 @@ const UserSchema = new mongoose.Schema<IUser>({
 const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
 
 export default User;
+export type UserLean = InferSchemaType<typeof UserSchema> & {
+  _id?: string;
+};
+
+export type UserType = {
+    firstName: string,
+    lastName: string,
+    assignment: string[],
+    community: string[],
+    role: string
+  }

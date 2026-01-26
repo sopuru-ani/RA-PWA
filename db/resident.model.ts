@@ -1,6 +1,6 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document, Model, InferSchemaType } from "mongoose";
 
-export interface IResident extends Document {
+interface IResident extends Document {
     fullName: string;
     firstName: string;
     lastName: string;
@@ -35,3 +35,6 @@ const ResidentSchema = new mongoose.Schema<IResident>({
 const Resident: Model<IResident> = mongoose.models.Resident || mongoose.model<IResident>('Resident', ResidentSchema)
 
 export default Resident;
+export type ResidentLean = InferSchemaType<typeof ResidentSchema> & {
+  _id: string;
+};

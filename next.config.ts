@@ -22,9 +22,7 @@ const nextConfig: any = {
   turbopack: {},
 
   // ✅ Enable App Router explicitly
-  experimental: {
-    appDir: true,
-  },
+  
 };
 
 export default withPWA({

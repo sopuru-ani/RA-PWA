@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import withPWA from "next-pwa";
 import runtimeCaching from "next-pwa/cache";
 
-const nextConfig: NextConfig = {
+const nextConfig: any = {
   reactStrictMode: true,
   allowedDevOrigins: [
     "10.238.204.166",
@@ -17,7 +17,14 @@ const nextConfig: NextConfig = {
     "https://10.247.136.150:3000",
     "https://10.238.204.166:3000",
   ],
+
+  // Turbopack optional
   turbopack: {},
+
+  // ✅ Enable App Router explicitly
+  experimental: {
+    appDir: true,
+  },
 };
 
 export default withPWA({

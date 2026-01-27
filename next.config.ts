@@ -16,6 +16,7 @@ const nextConfig: any = {
     "https://10.21.211.13:3000",
     "https://10.247.136.150:3000",
     "https://10.238.204.166:3000",
+    "https://ra-pwa.vercel.app"
   ],
 
   // Turbopack optional

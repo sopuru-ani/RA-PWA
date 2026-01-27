@@ -34,38 +34,56 @@ function SignupForm({
   async function signup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    let keepLoading = false;
 
-    const response = await fetch(`${BASE_URL}api/auth/signup`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        email,
-        password,
-        confirmPassword,
-        studentId,
-        firstName,
-        lastName,
-      }),
-    });
+    try {
+      const response = await fetch(`${BASE_URL}api/auth/signup`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email,
+          password,
+          confirmPassword,
+          studentId,
+          firstName,
+          lastName,
+        }),
+      });
 
-    const result: { msg: string } = await response.json();
+      let result: { msg?: string } = {};
+      try {
+        result = await response.json();
+      } catch {
+        // In case the server returns a non-JSON error response
+        result = { msg: "Unexpected server response" };
+      }
 
-    if (response.ok) {
-      setSuccess(true);
-      setError(false);
-      setMsg(result.msg);
-      setTimeout(() => {
-        setLoading(false);
-        redirect("/ra/dashboard");
-      }, 1500);
-    } else {
+      if (response.ok) {
+        keepLoading = true;
+        setSuccess(true);
+        setError(false);
+        setMsg(result.msg ?? "Signup successful");
+        setTimeout(() => {
+          setLoading(false);
+          redirect("/ra/dashboard");
+        }, 1500);
+      } else {
+        setSuccess(false);
+        setError(true);
+        setMsg(result.msg ?? "Signup failed");
+      }
+    } catch (err) {
+      console.error("Signup request failed", err);
       setSuccess(false);
       setError(true);
-      setMsg(result.msg);
-      setLoading(false);
+      setMsg("Network or server error. Please try again.");
+    } finally {
+      if (!keepLoading) {
+        setLoading(false);
+      }
     }
   }
 

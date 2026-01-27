@@ -26,30 +26,51 @@ function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   async function login(e: React.FormEvent<HTMLFormElement>) {
-    setLoading(true);
     e.preventDefault();
-    const response = await fetch(`${BASE_URL}api/auth/login`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
-    const result: { msg: string } = await response.json();
-    if (response.ok) {
-      setSuccess(true);
-      setError(false);
-      setMsg(result.msg);
-      setTimeout(() => {
-        setLoading(false);
-        redirect("/ra/dashboard");
-      }, 1500);
-    } else {
+    setLoading(true);
+    let keepLoading = false;
+
+    try {
+      const response = await fetch(`${BASE_URL}api/auth/login`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      let result: { msg?: string } = {};
+      try {
+        result = await response.json();
+      } catch {
+        // In case the server returns a non-JSON error response
+        result = { msg: "Unexpected server response" };
+      }
+
+      if (response.ok) {
+        keepLoading = true;
+        setSuccess(true);
+        setError(false);
+        setMsg(result.msg ?? "Login Successful");
+        setTimeout(() => {
+          setLoading(false);
+          redirect("/ra/dashboard");
+        }, 1500);
+      } else {
+        setSuccess(false);
+        setError(true);
+        setMsg(result.msg ?? "Login failed");
+      }
+    } catch (err) {
+      console.error("Login request failed", err);
       setSuccess(false);
       setError(true);
-      setMsg(result.msg);
-      setLoading(false);
+      setMsg("Network or server error. Please try again.");
+    } finally {
+      if (!keepLoading) {
+        setLoading(false);
+      }
     }
   }
 

@@ -24,7 +24,7 @@ import { Camera } from "lucide-react";
 
 import { useResidents } from "@/context/RAResidentProvider";
 import Spinner from "@/components/RA/Spinner";
-
+import { useVerifyAuth } from "@/hooks/useVerifyAuth";
 type ResidentInspection = {
   studentId: string;
   name: string;
@@ -54,6 +54,7 @@ type RoomInspectionDraft = {
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
 function page() {
   const router = useRouter();
+  const checkingAuth = useVerifyAuth();
   const [theSessionId, setTheSessionId] = useState<string | null>(null);
   const [sessionDate, setSessionDate] = useState<string | null>(null);
   // const { sessionId }: { sessionId: string | null } = useResidents();
@@ -93,6 +94,14 @@ function page() {
   const [user, setUser] = useState<UserType>(defaultUser);
   const [vacancy, setVacancy] = useState<RoomLean[]>([]);
   const [loading, setLoading] = useState(true);
+
+  if (checkingAuth) {
+    return (
+      <div className="h-dvh">
+        <Spinner />
+      </div>
+    );
+  }
 
   // 🔑 ARRAY OF ROOM INSPECTIONS
   const [inspectionData, setInspectionData] = useState<RoomInspectionDraft[]>(

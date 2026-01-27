@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,11 @@ import Walkthroughs from "@/components/RA/Inspections/Walkthroughs";
 
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
+import { useVerifyAuth } from "@/hooks/useVerifyAuth";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
 function page() {
   const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const checkingAuth = useVerifyAuth();
   const [empty, setEmpty] = useState<boolean>(false);
   const {
     sessionId,
@@ -32,31 +32,6 @@ function page() {
   if (sessionId) {
     isResumeSession = true;
   }
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}api/auth/verify`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (res.status === 401) {
-          router.replace("/login");
-          return;
-        }
-
-        // Optionally, you can read the user from here if you want
-        // const data = await res.json();
-
-        setCheckingAuth(false);
-      } catch (err) {
-        console.error("Auth check failed", err);
-        router.replace("/login");
-      }
-    };
-
-    verify();
-  }, [router]);
 
   if (checkingAuth) {
     // simple loading state while verifying access

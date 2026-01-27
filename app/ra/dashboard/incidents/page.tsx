@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -22,11 +21,10 @@ import { RoomLean } from "@/db/room.model";
 import { Trash2, ShieldAlert } from "lucide-react";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
+import { useVerifyAuth } from "@/hooks/useVerifyAuth";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
 function Page() {
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const checkingAuth = useVerifyAuth();
 
   const {
     community,
@@ -48,31 +46,6 @@ function Page() {
       : incidents.filter((incident) => incident.type === dropdown);
 
   if (filteredIncidents.length < 1) setEmpty(true);
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}api/auth/verify`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (res.status === 401) {
-          router.replace("/login");
-          return;
-        }
-
-        // Optionally, you can read the user from here if you want
-        // const data = await res.json();
-
-        setCheckingAuth(false);
-      } catch (err) {
-        console.error("Auth check failed", err);
-        router.replace("/login");
-      }
-    };
-
-    verify();
-  }, [router]);
 
   if (checkingAuth) {
     // simple loading state while verifying access

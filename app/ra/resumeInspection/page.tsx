@@ -19,6 +19,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 
 import { Camera } from "lucide-react";
+import Spinner from "@/components/RA/Spinner";
+import { useVerifyAuth } from "@/hooks/useVerifyAuth";
 
 type ResidentInspection = {
   studentId: string;
@@ -48,6 +50,7 @@ type RoomInspectionDraft = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
 function page() {
+  const checkingAuth = useVerifyAuth();
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -78,6 +81,14 @@ function page() {
   const [user, setUser] = useState<UserType>(defaultUser);
   const [vacancy, setVacancy] = useState<RoomLean[]>([]);
   const [loading, setLoading] = useState(true);
+
+  if (checkingAuth) {
+    return (
+      <div className="h-dvh">
+        <Spinner />
+      </div>
+    );
+  }
 
   // 🔑 ARRAY OF ROOM INSPECTIONS
   const [inspectionData, setInspectionData] = useState<RoomInspectionDraft[]>(

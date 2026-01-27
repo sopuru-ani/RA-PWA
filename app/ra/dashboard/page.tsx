@@ -9,9 +9,17 @@ import type { ResidentLean } from "@/db/resident.model";
 import { useResidents } from "@/context/RAResidentProvider";
 import { UserType } from "@/db/user.model";
 import Empty from "@/components/RA/Empty";
+import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
+import { useVerifyAuth } from "@/hooks/useVerifyAuth";
+
 function page() {
+  const checkingAuth = useVerifyAuth();
   const { residents, user }: { residents: ResidentLean[]; user: UserType } =
     useResidents();
+
+  if (checkingAuth) {
+    return <RADashboardSkeleton />;
+  }
 
   const [empty, setEmpty] = useState<boolean>(false);
   const [selected, setSelected] = useState("Section");

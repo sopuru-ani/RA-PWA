@@ -10,9 +10,18 @@ import { RoomLean } from "@/db/room.model";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserType } from "@/db/user.model";
 import Empty from "@/components/RA/Empty";
+import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
+import { useVerifyAuth } from "@/hooks/useVerifyAuth";
+
 function page() {
+  const checkingAuth = useVerifyAuth();
   const { vacancy, user }: { vacancy: RoomLean[]; user: UserType } =
     useResidents();
+
+  if (checkingAuth) {
+    return <RADashboardSkeleton />;
+  }
+
   const [empty, setEmpty] = useState<boolean>(false);
   const [selected, setSelected] = useState("Section");
   const filteredVacancy = vacancy.filter((v) => {

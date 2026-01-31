@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import PWARegister from "@/components/PWARegister";
 
 export const metadata: Metadata = {
   title: "Domus",
@@ -24,8 +23,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
->        
-          <PWARegister />
+        >
           {children}
         </ThemeProvider>
       </body>

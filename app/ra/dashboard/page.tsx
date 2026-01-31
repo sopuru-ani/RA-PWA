@@ -20,7 +20,7 @@ function page() {
 
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [empty, setEmpty] = useState<boolean>(false);
+  // const [empty, setEmpty] = useState<boolean>(false);
   const [selected, setSelected] = useState("Section");
   const [sort, setSort] = useState("Names");
   const [search, setSearch] = useState("");
@@ -79,7 +79,7 @@ function page() {
 
       return Number(a.room) - Number(b.room);
     });
-  if (filteredResidents.length < 1) setEmpty(true);
+  const empty = filteredResidents.length === 0;
 
   return (
     <>

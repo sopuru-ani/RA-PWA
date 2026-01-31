@@ -23,8 +23,8 @@ function SignUp() {
   const [msg, setMsg] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   return (
-    <div className="flex justify-center items-center p-4 min-h-dvh positive-relative">
-      <div className="flex flex-row gap-3 items-center p-3 bg-primary w-dvw absolute top-0 left-0">
+    <div className="flex flex-col justify-center items-center min-h-dvh positive-relative">
+      <div className="flex flex-row gap-3 items-center p-3 bg-primary w-dvw">
         <div className="w-12 h-12 rounded-xl text-black border-2 bg-white">
           <svg
             viewBox="0 0 1024 1024"
@@ -43,44 +43,48 @@ function SignUp() {
           Domus
         </h1>
       </div>
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Sign Up to go to your dashboard</CardTitle>
-          <CardDescription>Fill in your details blah blah blah</CardDescription>
-          {success && (
-            <AlertComp
-              title={msg}
-              description={"Redirecting to dashboard..."}
-              variant={"success"}
+      <div className="flex-1 flex justify-center items-center p-4 w-dvw">
+        <Card className="w-full max-w-lg">
+          <CardHeader>
+            <CardTitle>Sign Up to go to your dashboard</CardTitle>
+            <CardDescription>
+              Fill in your details blah blah blah
+            </CardDescription>
+            {success && (
+              <AlertComp
+                title={msg}
+                description={"Redirecting to dashboard..."}
+                variant={"success"}
+              />
+            )}
+            {error && (
+              <AlertComp
+                title={"Error"}
+                description={msg}
+                variant={"destructive"}
+              />
+            )}
+          </CardHeader>
+          <CardContent>
+            <SignupForm
+              setSuccess={setSuccess}
+              setError={setError}
+              setMsg={setMsg}
+              setLoading={setLoading}
+              loading={loading}
             />
-          )}
-          {error && (
-            <AlertComp
-              title={"Error"}
-              description={msg}
-              variant={"destructive"}
-            />
-          )}
-        </CardHeader>
-        <CardContent>
-          <SignupForm
-            setSuccess={setSuccess}
-            setError={setError}
-            setMsg={setMsg}
-            setLoading={setLoading}
-            loading={loading}
-          />
-        </CardContent>
-        <CardFooter className="flex-col gap-2">
-          <CardDescription>
-            Already have an account?{" "}
-            <Link href="/login" className="text-primary">
-              login
-            </Link>
-          </CardDescription>
-        </CardFooter>
-      </Card>
-      <footer className="bg-primary text-white p-6 px-4 mt-10 shadow-inner absolute bottom-0 w-full">
+          </CardContent>
+          <CardFooter className="flex-col gap-2">
+            <CardDescription>
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary">
+                login
+              </Link>
+            </CardDescription>
+          </CardFooter>
+        </Card>
+      </div>
+      <footer className="bg-primary text-white p-6 px-4 shadow-inner w-full">
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Logo or brand (optional) */}
           {/* <div className="flex items-center gap-2">

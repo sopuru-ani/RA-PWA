@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Resident Assistant Organizer',
-    short_name: 'RA tool',
+    name: 'Domus',
+    short_name: 'Domus',
     description: 'Tool to help Resident Assistants just a bit',
     start_url: '/',
     display: 'standalone',

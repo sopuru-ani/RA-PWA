@@ -83,7 +83,7 @@ function page() {
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <div className="mx-3">
           <ButtonsAndSearchBar
             selected={selected}

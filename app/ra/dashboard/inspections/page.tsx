@@ -63,7 +63,7 @@ function page() {
     return <RADashboardSkeleton />;
   }
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <div className="mb-2 mx-3">
         {/* <Button className="text-white bg-orange-500">
           Finish Last Inspection Session

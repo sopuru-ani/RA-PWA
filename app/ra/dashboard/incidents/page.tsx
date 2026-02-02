@@ -81,7 +81,7 @@ function Page() {
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <ScrollArea className="overflow-x-auto mb-2 mx-3">
           <div className="flex gap-2 overflow-x-auto whitespace-nowrap no-scrollbar">
             <DropDown dropdown={dropdown} setDropdown={setDropdown} />

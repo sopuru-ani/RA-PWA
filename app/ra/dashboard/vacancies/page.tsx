@@ -62,7 +62,7 @@ function page() {
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <div className="mb-2 ml-3">
           <ToggleGroup
             className=""

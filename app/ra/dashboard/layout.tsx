@@ -110,7 +110,7 @@ function layout({ children }: { children: ReactNode }) {
           walkthroughs,
         }}
       >
-        <div className="flex flex-col h-dvh">
+        <div className="flex flex-col h-dvh max-h-dvh">
           <RAHeader user={user} vacancies={vacancy} residents={residents} />
 
           <Separator />

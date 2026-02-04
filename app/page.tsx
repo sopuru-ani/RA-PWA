@@ -58,7 +58,8 @@ const benefits = [
   {
     icon: Clock,
     title: "Save Time",
-    description: "Streamline your daily tasks with efficient digital workflows.",
+    description:
+      "Streamline your daily tasks with efficient digital workflows.",
   },
   {
     icon: Shield,
@@ -232,7 +233,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <Logo className="w-6 h-6 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} Domus
+                © 2026 Domus
               </span>
             </div>
             <p className="text-sm text-muted-foreground">

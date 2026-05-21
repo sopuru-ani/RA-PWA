@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         if (!validPassword) return NextResponse.json({ msg: 'Invalid Password' }, { status: 400 });
         const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: exp });
         
-        const response = NextResponse.json({ msg: 'Login Successful' }, { status: 200 });
+        const response = NextResponse.json({ msg: 'Login Successful', role: user.role }, { status: 200 });
 
         // set the cookie on the response object
         response.cookies.set('token', token, {

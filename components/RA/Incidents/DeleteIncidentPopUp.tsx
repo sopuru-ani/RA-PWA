@@ -15,26 +15,28 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { useNotification } from "@/context/notification-context";
 
 interface DeleteIncidentPopUpProps {
   incidentId: string;
   onSuccess: () => void;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
 function DeleteIncidentPopUp({
   incidentId,
   onSuccess,
 }: DeleteIncidentPopUpProps) {
   const router = useRouter();
+  const { show } = useNotification();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BASE_URL}api/incidents`, {
+      const res = await apiFetch("api/incidents", {
         method: "DELETE",
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ incidentId: incidentId }),
       });
 
@@ -46,18 +48,32 @@ function DeleteIncidentPopUp({
       }
 
       if (!res.ok) {
-        window.location.reload();
-        console.error("Failed to delete incident:", data?.msg ?? data);
         setLoading(false);
-        router.refresh();
+        show({
+          msg: data?.msg ?? "Failed to delete incident",
+          type: "error",
+          closable: true,
+          duration: null,
+        });
         return;
       }
 
       setLoading(false);
+      show({
+        msg: data?.msg ?? "Incident deleted",
+        type: "success",
+        duration: 3000,
+      });
       onSuccess();
     } catch (err) {
       console.error("Error deleting incident:", err);
       setLoading(false);
+      show({
+        msg: "Network or server error. Please try again.",
+        type: "error",
+        closable: true,
+        duration: null,
+      });
     }
   };
 

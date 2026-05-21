@@ -23,7 +23,7 @@ import { Trash2, ShieldAlert } from "lucide-react";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
 function Page() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -51,10 +51,7 @@ function Page() {
   useEffect(() => {
     const verify = async () => {
       try {
-        const res = await fetch(`${BASE_URL}api/auth/verify`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const res = await apiFetch("api/auth/verify", { method: "GET" });
 
         if (res.status === 401) {
           router.replace("/login");

@@ -15,8 +15,7 @@ import { CommunityLean } from "@/db/community.models";
 import { IncidentLean } from "@/db/incident.model";
 import { RoomcheckLean, InspectionSession } from "@/db/roomcheck.model";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
 function layout({ children }: { children: ReactNode }) {
   const router = useRouter();
   // then in your component
@@ -45,9 +44,8 @@ function layout({ children }: { children: ReactNode }) {
     let isMounted = true;
     async function fetchResidents() {
       try {
-        const response = await fetch(`${BASE_URL}api/ra/dashboard`, {
+        const response = await apiFetch("api/ra/dashboard", {
           method: "GET",
-          credentials: "include",
         });
         const result: {
           msg: string;

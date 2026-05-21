@@ -28,7 +28,8 @@ interface Props {
   w: InspectionSession;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
+
 function Walkthroughs({ w }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
@@ -39,17 +40,13 @@ function Walkthroughs({ w }: Props) {
     async function getWalkthroughs() {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${BASE_URL}api/ra/inspections/walkthrough`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ sessionId: w.inspectionSession }),
+        const response = await apiFetch("api/ra/inspections/walkthrough", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({ sessionId: w.inspectionSession }),
+        });
 
         const {
           msg,

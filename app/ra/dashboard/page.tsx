@@ -12,7 +12,7 @@ import { UserType } from "@/db/user.model";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
 
 function page() {
   const { residents, user }: { residents: ResidentLean[]; user: UserType } =
@@ -27,9 +27,8 @@ function page() {
   useEffect(() => {
     const verify = async () => {
       try {
-        const res = await fetch(`${BASE_URL}api/auth/verify`, {
+        const res = await apiFetch("api/auth/verify", {
           method: "GET",
-          credentials: "include",
         });
 
         if (res.status === 401) {

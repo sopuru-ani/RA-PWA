@@ -26,9 +26,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { Plus, ArrowLeft, ChevronDownIcon, Minus, Router } from "lucide-react";
+import { Plus, ArrowLeft, ChevronDownIcon, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useNotification } from "@/context/notification-context";
 import { CommunityLean } from "@/db/community.models";
 import { UserType } from "@/db/user.model";
 import { RoomLean } from "@/db/room.model";
@@ -40,14 +41,13 @@ interface Props {
   onSuccess: () => void;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
 function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
   const router = useRouter();
+  const { show } = useNotification();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [incidentType, setIncidentType] = useState("Maintenance");
@@ -100,7 +100,7 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
     }
 
     try {
-      const res = await fetch(`${BASE_URL}api/incidents`, {
+      const res = await apiFetch("api/incidents", {
         method: "POST",
         body: formData,
       });
@@ -113,34 +113,34 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
       }
       if (!res.ok) {
         setLoading(false);
-        setSuccess("");
-        setError(data.msg);
-        const viewport = dialogRef.current?.querySelector(
-          "[data-radix-scroll-area-viewport]",
-        ) as HTMLDivElement | null;
-
-        if (viewport) {
-          viewport.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        show({
+          msg: data.msg ?? "Failed to create incident",
+          type: "error",
+          closable: true,
+          duration: null,
+        });
         return;
       }
 
       setLoading(false);
-      setError("");
-      setSuccess(data.msg);
-      const viewport = dialogRef.current?.querySelector(
-        "[data-radix-scroll-area-viewport]",
-      ) as HTMLDivElement | null;
-
-      if (viewport) {
-        viewport.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      show({
+        msg: data.msg ?? "Incident created",
+        type: "success",
+        duration: 1500,
+      });
       setTimeout(() => {
         onSuccess();
       }, 1500);
       setTimeout(() => setDialogOpen(false), 3000);
     } catch (err) {
       console.error("Failed to submit incident", err);
+      setLoading(false);
+      show({
+        msg: "Network or server error. Please try again.",
+        type: "error",
+        closable: true,
+        duration: null,
+      });
     }
   };
 
@@ -179,17 +179,6 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
           >
             <div className="flex">
               <div className="min-h-full md:w-[50dvw]">
-                {error && (
-                  <div className="border-l-4 border-red-500 bg-red-100 text-red-800 px-4 py-2 my-2 rounded-sm">
-                    <p className="text-sm font-medium">{error}</p>
-                  </div>
-                )}
-                {success && (
-                  <div className="border-l-4 border-green-500 bg-green-100 text-green-800 px-4 py-2 my-2 rounded-sm">
-                    <p className="text-sm font-medium">{success}</p>
-                  </div>
-                )}
-
                 <div className="flex flex-row items-center gap-4 mb-3">
                   <p>Incident Type: </p>
                   <Select value={incidentType} onValueChange={setIncidentType}>

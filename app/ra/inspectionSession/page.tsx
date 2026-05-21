@@ -51,7 +51,8 @@ type RoomInspectionDraft = {
   residents: ResidentInspection[];
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
+
 function page() {
   const router = useRouter();
   const [theSessionId, setTheSessionId] = useState<string | null>(null);
@@ -151,7 +152,7 @@ function page() {
 
     async function fetchResidents() {
       try {
-        const response = await fetch(`${BASE_URL}api/ra/inspections`, {
+        const response = await apiFetch("api/ra/inspections", {
           method: "POST",
           credentials: "include",
           body: JSON.stringify({ sessionId: theSessionId }),
@@ -298,7 +299,7 @@ function page() {
   async function oneRoomChecked(roomNumber: string) {
     const oneRoom = displayEach(roomNumber);
     try {
-      const response = await fetch(`${BASE_URL}api/ra/inspections/room-check`, {
+      const response = await apiFetch("api/ra/inspections/room-check", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -335,20 +336,16 @@ function page() {
   }
   async function allChecked() {
     try {
-      const response = await fetch(
-        `${BASE_URL}api/ra/inspections/all-checked`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sessionId: theSessionId,
-            sessionDate: sessionDate,
-          }),
+      const response = await apiFetch("api/ra/inspections/all-checked", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          sessionId: theSessionId,
+          sessionDate: sessionDate,
+        }),
+      });
       const { msg } = await response.json();
 
       if (response.status === 401) {

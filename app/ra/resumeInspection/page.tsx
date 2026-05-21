@@ -46,7 +46,8 @@ type RoomInspectionDraft = {
   residents: ResidentInspection[];
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
+
 function page() {
   const [sessionId, setSessionId] = useState<string | null>(null);
 
@@ -135,7 +136,7 @@ function page() {
 
     async function fetchResidents() {
       try {
-        const response = await fetch(`${BASE_URL}api/ra/inspections`, {
+        const response = await apiFetch("api/ra/inspections", {
           method: "GET",
           credentials: "include",
         });
@@ -225,7 +226,7 @@ function page() {
   async function oneRoomChecked(roomNumber: string) {
     const oneRoom = displayEach(roomNumber);
     try {
-      const response = await fetch(`${BASE_URL}api/ra/inspections/room-check`, {
+      const response = await apiFetch("api/ra/inspections/room-check", {
         method: "POST",
         credentials: "include",
         headers: {

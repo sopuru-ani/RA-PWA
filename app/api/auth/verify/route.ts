@@ -31,8 +31,8 @@ export async function GET(req: NextRequest) {
       firstName: dbUser.firstName,
       lastName: dbUser.lastName,
       role: dbUser.role,
-      community: dbUser.community,
-      assignment: dbUser.assignment,
+      community: dbUser.community ?? null,
+      assignment: dbUser.assignment ?? null,
     };
 
     return NextResponse.json({ authenticated: true, user }, { status: 200 });

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { NotificationProvider } from "@/context/notification-context";
 
 export const metadata: Metadata = {
   title: "Domus",
@@ -24,7 +25,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <NotificationProvider>{children}</NotificationProvider>
         </ThemeProvider>
       </body>
     </html>

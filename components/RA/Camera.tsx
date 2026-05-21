@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useNotification } from "@/context/notification-context";
 
 export default function Camera() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { show } = useNotification();
 
   useEffect(() => {
     async function startCamera() {
@@ -17,19 +18,22 @@ export default function Camera() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-      } catch (err) {
-        setError("Camera access denied or unavailable");
+      } catch {
+        show({
+          msg: "Camera access denied or unavailable",
+          type: "error",
+          closable: true,
+          duration: null,
+        });
       }
     }
 
     startCamera();
-  }, []);
+  }, [show]);
 
   return (
     <div>
       <h2>Camera Preview</h2>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <video
         ref={videoRef}

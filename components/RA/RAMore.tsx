@@ -26,17 +26,16 @@ interface NavItemProps {
   className?: string;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch, clearAuthToken } from "@/lib/api-client";
+
 function RAMore({ label, icon: Icon, className }: NavItemProps) {
   const { setTheme } = useTheme();
   const router = useRouter();
 
   async function handleLogout() {
     try {
-      await fetch(`${BASE_URL}api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      await apiFetch("api/auth/logout", { method: "POST" });
+      clearAuthToken();
 
       router.replace("/login"); // or wherever your login page is
     } catch (err) {

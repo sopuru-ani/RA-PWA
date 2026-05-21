@@ -7,23 +7,21 @@ import { Button } from "@/components/ui/button";
 import { useState, Dispatch, SetStateAction } from "react";
 import { redirect } from "next/navigation";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_LAN;
+import { apiFetch } from "@/lib/api-client";
 
 interface Props {
-  setSuccess: Dispatch<SetStateAction<boolean>>;
-  setError: Dispatch<SetStateAction<boolean>>;
-  setMsg: Dispatch<SetStateAction<string>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
   loading: boolean;
+
+  show: (notif: {
+    msg: string;
+    type?: "error" | "success" | "neutral";
+    closable?: boolean;
+    duration?: number | null;
+  }) => void;
 }
 
-function SignupForm({
-  setSuccess,
-  setError,
-  setMsg,
-  setLoading,
-  loading,
-}: Props) {
+function SignupForm({ setLoading, loading, show }: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [studentId, setStudentId] = useState("");
@@ -37,12 +35,11 @@ function SignupForm({
     let keepLoading = false;
 
     try {
-      const response = await fetch(`${BASE_URL}api/auth/signup`, {
+      const response = await apiFetch("api/auth/signup", {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify({
           email,
           password,
@@ -57,29 +54,39 @@ function SignupForm({
       try {
         result = await response.json();
       } catch {
-        // In case the server returns a non-JSON error response
         result = { msg: "Unexpected server response" };
       }
 
       if (response.ok) {
         keepLoading = true;
-        setSuccess(true);
-        setError(false);
-        setMsg(result.msg ?? "Signup successful");
+
+        show({
+          msg: result.msg ?? "Signup successful",
+          duration: 1500,
+          type: "success",
+        });
+
         setTimeout(() => {
           setLoading(false);
           redirect("/ra/dashboard");
         }, 1500);
       } else {
-        setSuccess(false);
-        setError(true);
-        setMsg(result.msg ?? "Signup failed");
+        show({
+          msg: result.msg ?? "Signup failed",
+          type: "error",
+          closable: true,
+          duration: null,
+        });
       }
     } catch (err) {
       console.error("Signup request failed", err);
-      setSuccess(false);
-      setError(true);
-      setMsg("Network or server error. Please try again.");
+
+      show({
+        msg: "Network or server error. Please try again.",
+        type: "error",
+        closable: true,
+        duration: null,
+      });
     } finally {
       if (!keepLoading) {
         setLoading(false);

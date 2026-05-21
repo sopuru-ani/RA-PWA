@@ -1,6 +1,5 @@
 /**
- * Use the project root's mongoose so /db models and connectDB share one connection.
- * (A separate copy in server/node_modules caused buffering timeouts on login.)
+(the old “root node_modules” note is outdated
  */
 import mongoose from "mongoose";
 

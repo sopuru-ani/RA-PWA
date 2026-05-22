@@ -9,7 +9,7 @@ import RABottomNav from "@/components/RA/RABottomNav";
 import RAHeader from "@/components/RA/RAHeader";
 
 import type { ResidentLean } from "@/db/resident.model";
-import type { RoomLean } from "@/db/room.model";
+import type { RoomWithVacancy } from "@/db/room.model";
 import type { UserType } from "@/db/user.model";
 import { CommunityLean } from "@/db/community.models";
 import { IncidentLean } from "@/db/incident.model";
@@ -29,13 +29,13 @@ function layout({ children }: { children: ReactNode }) {
   };
 
   const [residents, setResidents] = useState<ResidentLean[]>([]);
-  const [rooms, setRooms] = useState<RoomLean[]>([]);
+  const [rooms, setRooms] = useState<RoomWithVacancy[]>([]);
   const [user, setUser] = useState<UserType>(defaultUser);
   const [community, setCommunity] = useState<CommunityLean[]>([]);
   const [incidents, setIncidents] = useState<IncidentLean[]>([]);
   const [roomChecked, setRoomChecked] = useState<RoomcheckLean[]>([]);
   const [walkthroughs, setWalkthroughs] = useState<InspectionSession[]>([]);
-  const [vacancy, setVacancy] = useState<RoomLean[]>([]);
+  const [vacancy, setVacancy] = useState<RoomWithVacancy[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -50,7 +50,7 @@ function layout({ children }: { children: ReactNode }) {
         const result: {
           msg: string;
           residents: ResidentLean[];
-          rooms: RoomLean[];
+          rooms: RoomWithVacancy[];
           user: UserType;
           communityInfo: CommunityLean[];
           incidents: IncidentLean[];

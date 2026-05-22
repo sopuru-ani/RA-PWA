@@ -8,6 +8,7 @@ import Room, { RoomLean } from "@/db/room.model";
 import Community, { CommunityLean } from "@/db/community.models";
 import Incident, { IncidentLean } from "@/db/incident.model";
 import Roomcheck, { RoomcheckLean } from "@/db/roomcheck.model";
+import { attachVacancyToRooms } from "@/db/roomVacancy";
 
 const secretKey = process.env.JWT_SECRET!;
 export async function GET(req: NextRequest) {
@@ -76,7 +77,7 @@ export async function GET(req: NextRequest) {
             }
         ]);
         
-        return NextResponse.json({ msg: 'Residents fetched successfully!', residents: resident, rooms: room, user: sendUser, communityInfo: community, incidents: incidents, roomsChecked: roomsChecked, walkthroughs: walkthroughs }, { status: 200 });
+        return NextResponse.json({ msg: 'Residents fetched successfully!', residents: resident, rooms: attachVacancyToRooms(room, resident), user: sendUser, communityInfo: community, incidents: incidents, roomsChecked: roomsChecked, walkthroughs: walkthroughs }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ msg: 'Internal Server Error', error: error instanceof Error ? error.message : 'Unknown Error'}, { status: 500 });
     }

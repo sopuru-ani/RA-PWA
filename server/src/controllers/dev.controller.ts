@@ -41,8 +41,6 @@ export async function seedResidents(
         community: room.community,
         section: room.section,
         room: room.room,
-        raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -76,7 +74,6 @@ export async function seedRooms(req: Request, res: Response): Promise<void> {
       section,
       room: roomNumber,
       capacity: capacity || 1,
-      vacancy: 0,
       createdAt: new Date(),
     })),
   );

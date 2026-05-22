@@ -20,14 +20,13 @@ import { apiFetch } from "@/lib/api-client";
 function page() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [empty, setEmpty] = useState<boolean>(false);
   const {
     sessionId,
     walkthroughs,
   }: { sessionId: string | null; walkthroughs: InspectionSession[] } =
     useResidents();
 
-  if (walkthroughs.length < 1) setEmpty(true);
+  const isEmpty = walkthroughs.length < 1;
   let isResumeSession = false;
   if (sessionId) {
     isResumeSession = true;
@@ -77,7 +76,7 @@ function page() {
           </Button>
         </Link>
       </div>
-      {empty ? (
+      {isEmpty ? (
         <Empty
           message="No walkthroughs yet"
           description="Once inspections are completed, they’ll appear here."

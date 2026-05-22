@@ -13,6 +13,7 @@ import {
   type IncidentLean,
   type RoomcheckLean,
 } from "../lib/models.js";
+import { attachVacancyToRooms } from "../../db/roomVacancy.js";
 
 export async function getDashboard(
   req: AuthenticatedRequest,
@@ -87,7 +88,7 @@ export async function getDashboard(
     res.status(200).json({
       msg: "Residents fetched successfully!",
       residents: resident,
-      rooms: room,
+      rooms: attachVacancyToRooms(room, resident),
       user: sendUser,
       communityInfo: community,
       incidents,
@@ -143,7 +144,7 @@ export async function getInspectionSession(
     res.status(200).json({
       msg: "Residents fetched successfully!",
       residents: resident,
-      rooms: room,
+      rooms: attachVacancyToRooms(room, resident),
       roomsChecked,
       user: sendUser,
     });

@@ -36,8 +36,6 @@ export async function POST(req: NextRequest) {
         community: room.community,
         section: room.section,
         room: room.room,
-        raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
         createdAt: new Date(),
         updatedAt: new Date(),
       };

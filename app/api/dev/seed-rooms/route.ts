@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
       section,
       room: roomNumber,
       capacity: capacity || 1, // default 2 if not provided
-      vacancy: 0,
       createdAt: new Date(),
     }))
   );

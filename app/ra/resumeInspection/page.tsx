@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import type { ResidentLean } from "@/db/resident.model";
-import type { RoomLean } from "@/db/room.model";
+import type { RoomWithVacancy } from "@/db/room.model";
 import type { UserType } from "@/db/user.model";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -77,7 +77,7 @@ function page() {
   const [residents, setResidents] = useState<ResidentLean[]>([]);
   const [rooms, setRooms] = useState<RoomsLeanandUpdatedAt[]>([]);
   const [user, setUser] = useState<UserType>(defaultUser);
-  const [vacancy, setVacancy] = useState<RoomLean[]>([]);
+  const [vacancy, setVacancy] = useState<RoomWithVacancy[]>([]);
   const [loading, setLoading] = useState(true);
 
   // 🔑 ARRAY OF ROOM INSPECTIONS
@@ -143,7 +143,7 @@ function page() {
         const result: {
           msg: string;
           residents: ResidentLean[];
-          rooms: RoomLean[];
+          rooms: RoomWithVacancy[];
           user: UserType;
         } = await response.json();
         const roomsWithUI: RoomsLeanandUpdatedAt[] = result.rooms.map(

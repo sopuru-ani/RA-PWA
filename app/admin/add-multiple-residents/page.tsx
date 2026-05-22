@@ -40,8 +40,6 @@ type ResidentRow = {
   community: string;
   section: string;
   room: string;
-  raEmail: string;
-  gaEmail: string;
   notes?: string;
 };
 
@@ -109,16 +107,6 @@ const FIELD_ALIASES: Record<string, keyof ResidentRow> = {
   "room no": "room",
   roomno: "room",
   unit: "room",
-  raemail: "raEmail",
-  "ra email": "raEmail",
-  ra_email: "raEmail",
-  "resident advisor email": "raEmail",
-  "ra e-mail": "raEmail",
-  gaemail: "gaEmail",
-  "ga email": "gaEmail",
-  ga_email: "gaEmail",
-  "graduate assistant email": "gaEmail",
-  "ga e-mail": "gaEmail",
   notes: "notes",
   note: "notes",
   comments: "notes",
@@ -126,7 +114,7 @@ const FIELD_ALIASES: Record<string, keyof ResidentRow> = {
   remarks: "notes",
 };
 
-// raEmail + gaEmail excluded — deduced server-side
+// RA/GA emails live on SectionStaff; not stored on residents
 const REQUIRED_FIELDS: (keyof ResidentRow)[] = [
   "firstName",
   "lastName",
@@ -146,8 +134,6 @@ const DB_FIELDS: (keyof ResidentRow)[] = [
   "community",
   "section",
   "room",
-  "raEmail",
-  "gaEmail",
   "notes",
 ];
 
@@ -160,8 +146,6 @@ const FIELD_LABELS: Record<keyof ResidentRow, string> = {
   community: "Community",
   section: "Section",
   room: "Room",
-  raEmail: "RA Email",
-  gaEmail: "GA Email",
   notes: "Notes",
 };
 

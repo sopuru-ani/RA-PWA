@@ -5,6 +5,7 @@ import connectDB from "@/lib/connect";
 import User from "@/db/user.model";
 import Resident from "@/db/resident.model";
 import SectionStaff from "@/db/sectionStaff.model";
+import { buildStaffMap, omitStaffFields, staffKey } from "@/db/residentStaff";
 
 const secretKey = process.env.JWT_SECRET!;
 
@@ -52,34 +53,32 @@ export async function POST(req: NextRequest) {
       $or: uniquePairs.map(({ community, section }) => ({ community, section })),
     }).lean();
 
-    // build a lookup map: "community__section" -> { raEmail, gaEmail }
-    const staffMap = new Map(
-      staffRecords.map((s) => [`${s.community}__${s.section}`, { raEmail: s.raEmail, gaEmail: s.gaEmail }])
-    );
+    const staffMap = buildStaffMap(staffRecords);
 
-    // ── Build docs, flagging rows with missing staff ──────
     const missingStaff: { index: number; community: string; section: string }[] = [];
 
-    const docs = residents.map((r, i) => {
-      const key = `${r.community}__${r.section}`;
-      const staff = staffMap.get(key);
+    const docs = residents.map((r: Record<string, unknown>, i: number) => {
+      const community = String(r.community ?? "");
+      const section = String(r.section ?? "");
+      const key = staffKey(community, section);
 
-      if (!staff) {
-        missingStaff.push({ index: i, community: r.community, section: r.section });
+      if (!staffMap.has(key)) {
+        missingStaff.push({ index: i, community, section });
       }
 
+      const base = omitStaffFields(r);
+
       return {
-        ...r,
-        fullName: r.fullName || `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim(),
-        raEmail: r.raEmail || staff?.raEmail || "",
-        gaEmail: r.gaEmail || staff?.gaEmail || "",
+        ...base,
+        fullName:
+          (r.fullName as string) ||
+          `${String(r.firstName ?? "")} ${String(r.lastName ?? "")}`.trim(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
     });
 
     // if any community+section combo has no staff record, bail early
-    // so we don't insert residents with empty raEmail/gaEmail
     if (missingStaff.length > 0) {
       return NextResponse.json(
         {

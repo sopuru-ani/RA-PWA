@@ -40,14 +40,13 @@ function Page() {
     incidents: IncidentLean[];
   } = useResidents();
 
-  const [empty, setEmpty] = useState<boolean>(false);
   const [dropdown, setDropdown] = useState("All");
   const filteredIncidents =
     dropdown === "All"
       ? incidents
       : incidents.filter((incident) => incident.type === dropdown);
+  const isEmpty = filteredIncidents.length < 1;
 
-  if (filteredIncidents.length < 1) setEmpty(true);
   useEffect(() => {
     const verify = async () => {
       try {
@@ -93,7 +92,7 @@ function Page() {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        {empty ? (
+        {isEmpty ? (
           <Empty
             message="No incidents reported"
             description="You're all caught up. Nothing to review right now."

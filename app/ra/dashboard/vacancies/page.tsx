@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { useResidents } from "@/context/RAResidentProvider";
 import { ResidentLean } from "@/db/resident.model";
-import { RoomLean } from "@/db/room.model";
+import { RoomWithVacancy } from "@/db/room.model";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserType } from "@/db/user.model";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
@@ -15,11 +15,10 @@ import Empty from "@/components/RA/Empty";
 
 import { apiFetch } from "@/lib/api-client";
 function page() {
-  const { vacancy, user }: { vacancy: RoomLean[]; user: UserType } =
+  const { vacancy, user }: { vacancy: RoomWithVacancy[]; user: UserType } =
     useResidents();
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [empty, setEmpty] = useState<boolean>(false);
   const [selected, setSelected] = useState("Section");
   useEffect(() => {
     const verify = async () => {
@@ -55,7 +54,7 @@ function page() {
     }
     return v.community === user.community[0];
   });
-  if (filteredVacancy.length < 1) setEmpty(true);
+  const isEmpty = filteredVacancy.length < 1;
 
   return (
     <>
@@ -83,7 +82,7 @@ function page() {
           </ToggleGroup>
         </div>
 
-        {empty ? (
+        {isEmpty ? (
           <Empty
             message="No vacant rooms"
             description="All rooms in this section/community are currently occupied."
@@ -104,10 +103,16 @@ function page() {
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           i.vacancy === i.capacity
                             ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
+                            : i.vacancy === 0
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-amber-100 text-amber-800"
                         }`}
                       >
-                        {i.vacancy === i.capacity ? "Vacant" : "Full"}
+                        {i.vacancy === i.capacity
+                          ? "Vacant"
+                          : i.vacancy === 0
+                            ? "Full"
+                            : "Partial"}
                       </span>
                     </div>
 

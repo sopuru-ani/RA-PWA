@@ -6,6 +6,7 @@ import User from "@/db/user.model";
 import Resident, { ResidentLean } from "@/db/resident.model";
 import Room, { RoomLean } from "@/db/room.model";
 import Roomcheck, { RoomcheckLean } from "@/db/roomcheck.model";
+import { attachVacancyToRooms } from "@/db/roomVacancy";
 
 const secretKey = process.env.JWT_SECRET!;
 export async function POST(req: NextRequest) {
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
         const room = await Room.find({ community: dbUser.community[0], section: dbUser.assignment[0] }).sort({ room: 1 }).lean<RoomLean[]>();
         const getSession = await Roomcheck.findOne({ sessionStatus: "in_progress", community: dbUser.community[0], section: dbUser.assignment[0] }).lean<RoomcheckLean>();
         const roomsChecked = await Roomcheck.find({ inspectionSession: getSession?.inspectionSession, community: dbUser.community[0], section: dbUser.assignment[0] }).lean<RoomcheckLean[]>();
-        return NextResponse.json({ msg: 'Residents fetched successfully!', residents: resident, rooms: room, roomsChecked: roomsChecked, user: sendUser }, { status: 200 });
+        return NextResponse.json({ msg: 'Residents fetched successfully!', residents: resident, rooms: attachVacancyToRooms(room, resident), roomsChecked: roomsChecked, user: sendUser }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ msg: 'Internal Server Error', error: error instanceof Error ? error.message : 'Unknown Error'}, { status: 500 });
     }

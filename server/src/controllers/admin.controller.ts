@@ -9,6 +9,7 @@ import {
   AuthorizedUser,
   SectionStaff,
 } from "../lib/models.js";
+import { buildStaffMap, omitStaffFields, staffKey } from "../../db/residentStaff.js";
 
 export async function addAllowedUser(
   req: Request,
@@ -86,25 +87,14 @@ export async function seedResidents(
         community,
         section,
       })),
-    }).lean();
+    }).lean<{
+      community: string;
+      section: string;
+      raEmail: string;
+      gaEmail: string;
+    }[]>();
 
-    const staffMap = new Map<
-      string,
-      { raEmail: string; gaEmail: string }
-    >(
-      staffRecords.map((s) => {
-        const row = s as unknown as {
-          community: string;
-          section: string;
-          raEmail: string;
-          gaEmail: string;
-        };
-        return [
-          `${row.community}__${row.section}`,
-          { raEmail: row.raEmail, gaEmail: row.gaEmail },
-        ] as const;
-      }),
-    );
+    const staffMap = buildStaffMap(staffRecords);
 
     const missingStaff: {
       index: number;
@@ -120,16 +110,13 @@ export async function seedResidents(
           fullName?: string;
           firstName?: string;
           lastName?: string;
-          raEmail?: string;
-          gaEmail?: string;
           [key: string]: unknown;
         },
         i: number,
       ) => {
-        const key = `${r.community}__${r.section}`;
-        const staff = staffMap.get(key);
+        const key = staffKey(r.community, r.section);
 
-        if (!staff) {
+        if (!staffMap.has(key)) {
           missingStaff.push({
             index: i,
             community: r.community,
@@ -137,13 +124,13 @@ export async function seedResidents(
           });
         }
 
+        const base = omitStaffFields(r);
+
         return {
-          ...r,
+          ...base,
           fullName:
             r.fullName ||
             `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim(),
-          raEmail: r.raEmail || staff?.raEmail || "",
-          gaEmail: r.gaEmail || staff?.gaEmail || "",
           createdAt: new Date(),
           updatedAt: new Date(),
         };

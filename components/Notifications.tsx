@@ -21,11 +21,14 @@ function Notifications({
   onClose,
 }: Props) {
   const typeStyles = {
-    error: "bg-red-500/15 border-red-500 text-red-200",
+    error:
+      "bg-red-300/70 border-red-400 text-red-800 dark:bg-red-400/30 dark:border-red-500 dark:text-red-100",
 
-    success: "bg-green-500/15 border-green-500 text-green-200",
+    success:
+      "bg-green-300/70 text-green-800 border-green-400 dark:bg-green-400/30 dark:border-green-500 dark:text-green-100",
 
-    neutral: "bg-secondary border-secondary-muted text-white",
+    neutral:
+      "bg-gray-400/70 border-gray-800 text-black dark:bg-gray-300/40 dark:border-gray-700 dark:text-white",
   };
 
   return (
@@ -53,7 +56,7 @@ function Notifications({
         }}
         className={`
           w-full max-w-[400px]
-          rounded-t-lg border-b-2
+          rounded-b-lg border-t-2
           p-3 font-semibold
           shadow-[0_-2px_8px_rgba(0,0,0,0.10)]
           pointer-events-auto
@@ -72,7 +75,8 @@ function Notifications({
             className="
               shrink-0 rounded-full p-1
               transition-colors
-              hover:bg-white/10
+              dark:hover:bg-white/10
+              hover:bg-white/70
               active:scale-95
               cursor-pointer
             "

@@ -9,8 +9,6 @@ interface IResident extends Document {
     community: string;
     section: string;
     room: string;
-    raEmail: string;
-    gaEmail: string;
     notes?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -25,8 +23,6 @@ const ResidentSchema = new mongoose.Schema<IResident>({
     community: { type: String, required: true, trim: true },
     section: { type: String, required: true, trim: true },
     room: { type: String, required: true, trim: true },
-    raEmail: { type: String, required: true, trim: true },
-    gaEmail: { type: String, required: true, trim: true },
     notes: String,
     createdAt: { type: Date, required: true, default: Date.now },
     updatedAt: { type: Date, required: true, default: Date.now }

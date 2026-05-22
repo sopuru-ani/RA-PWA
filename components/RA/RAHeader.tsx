@@ -12,12 +12,12 @@ import {
 
 import { ChevronsUpDown } from "lucide-react";
 import { UserType } from "@/db/user.model";
-import { RoomLean } from "@/db/room.model";
+import { RoomWithVacancy } from "@/db/room.model";
 import { ResidentLean } from "@/db/resident.model";
 
 type Props = {
   user: UserType;
-  vacancies: RoomLean[];
+  vacancies: RoomWithVacancy[];
   residents: ResidentLean[];
 };
 

@@ -30,8 +30,9 @@ export const Roomcheck = resolveModel<Document>(roomcheckModule);
 export const SectionStaff = resolveModel<Document>(sectionStaffModule);
 
 export type { IUser, IAuthorized, IRoom, IIncident };
-export type { RoomLean } from "../../db/room.model.js";
+export type { RoomLean, RoomWithVacancy } from "../../db/room.model.js";
 export type { CommunityLean } from "../../db/community.models.js";
 export type { IncidentLean } from "../../db/incident.model.js";
 export type { ResidentLean } from "../../db/resident.model.js";
+export type { ResidentWithStaff, StaffEmails } from "../../db/residentStaff.js";
 export type { RoomcheckLean } from "../../db/roomcheck.model.js";

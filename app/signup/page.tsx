@@ -62,9 +62,9 @@ function SignUp() {
 
       {/* Main content */}
 
-      <main className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6">
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:p-6">
         <div className="w-full max-w-xl">
-          <Card className="border-none shadow-none bg-transparent">
+          <Card className="border-none shadow-none bg-transparent py-4">
             <CardHeader className="space-y-1 pb-4">
               <CardTitle className="text-3xl font-bold">
                 Create an account

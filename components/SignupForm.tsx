@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useState, Dispatch, SetStateAction } from "react";
 import { redirect } from "next/navigation";
@@ -28,6 +29,8 @@ function SignupForm({ setLoading, loading, show }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [hidePassword, setHidePassword] = useState(true);
+  const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
 
   async function signup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -107,6 +110,7 @@ function SignupForm({ setLoading, loading, show }: Props) {
               required
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              className="px-3 py-5 pr-10"
             />
           </div>
 
@@ -119,6 +123,7 @@ function SignupForm({ setLoading, loading, show }: Props) {
               required
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              className="px-3 py-5 pr-10"
             />
           </div>
         </div>
@@ -132,6 +137,7 @@ function SignupForm({ setLoading, loading, show }: Props) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="px-3 py-5 pr-10"
           />
         </div>
 
@@ -143,34 +149,63 @@ function SignupForm({ setLoading, loading, show }: Props) {
             required
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
+            className="px-3 py-5 pr-10"
           />
         </div>
 
-        <div className="flex flex-row gap-3">
+        <div className="flex flex-col gap-3">
           <div className="grid gap-2 flex-1">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
             </div>
-            <Input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              {hidePassword ? (
+                <EyeOff
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 cursor-pointer"
+                  onClick={() => setHidePassword(!hidePassword)}
+                />
+              ) : (
+                <Eye
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 cursor-pointer"
+                  onClick={() => setHidePassword(!hidePassword)}
+                />
+              )}
+              <Input
+                id="password"
+                type={hidePassword ? "password" : "text"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="px-3 py-5 pr-10 text-sm"
+              />
+            </div>
           </div>
 
           <div className="grid gap-2 flex-1">
             <div className="flex items-center">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
             </div>
-            <Input
-              id="confirmPassword"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div className="relative">
+              {hideConfirmPassword ? (
+                <EyeOff
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground w-5 h-5 cursor-pointer"
+                  onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
+                />
+              ) : (
+                <Eye
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground w-5 h-5 cursor-pointer"
+                  onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
+                />
+              )}
+              <Input
+                id="confirmPassword"
+                type={hideConfirmPassword ? "password" : "text"}
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="px-3 py-5 pr-10 text-sm"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useState, Dispatch, SetStateAction } from "react";
 import { redirect } from "next/navigation";
@@ -24,6 +25,7 @@ interface Props {
 function LoginForm({ setLoading, loading, show }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [hidePassword, setHidePassword] = useState(true);
 
   async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -113,7 +115,7 @@ function LoginForm({ setLoading, loading, show }: Props) {
               setEmail(e.target.value);
             }}
             required
-            className="px-3 py-5"
+            className="px-3 py-5 text-sm"
           />
         </div>
 
@@ -129,17 +131,30 @@ function LoginForm({ setLoading, loading, show }: Props) {
             </a>
           </div>
 
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            required
-            className="px-3 py-5"
-          />
+          <div className="relative">
+            {hidePassword ? (
+              <EyeOff
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground w-5 h-5 cursor-pointer"
+                onClick={() => setHidePassword(!hidePassword)}
+              />
+            ) : (
+              <Eye
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground w-5 h-5 cursor-pointer"
+                onClick={() => setHidePassword(!hidePassword)}
+              />
+            )}
+            <Input
+              id="password"
+              name="password"
+              type={hidePassword ? "password" : "text"}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              required
+              className="px-3 py-5 pr-10 text-sm"
+            />
+          </div>
         </div>
       </div>
 

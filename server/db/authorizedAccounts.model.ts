@@ -2,7 +2,7 @@ import mongoose, { Document, Model } from "mongoose";
 
 export interface IAuthorized extends Document {
     email: string;
-    role: 'RA' | 'GA' | 'Admin';
+    role: 'RA' | 'GA' | 'Admin' | 'SA';
     isActive: boolean;
     community?: string[],
     assignment?: string[],
@@ -13,7 +13,7 @@ export interface IAuthorized extends Document {
 
 const AuthorizedUserSchema = new mongoose.Schema<IAuthorized>({
     email: { type: String, required: true, trim: true, unique: true },
-    role: { type: String, required: true, enum: ['RA', 'Admin', 'GA'], trim: true },
+    role: { type: String, required: true, enum: ['RA', 'Admin', 'GA', 'SA'], trim: true },
     isActive: { type: Boolean, required: true },
     community: { type: [String], default: [] },
     assignment: { type: [String], default: [] },

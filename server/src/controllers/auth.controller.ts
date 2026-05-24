@@ -65,7 +65,7 @@ export async function signup(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  if (userAllowed.role === "RA" && !body.studentId) {
+  if ((userAllowed.role === "RA" || userAllowed.role === "SA") && !body.studentId) {
     res
       .status(400)
       .json({ msg: "Please provide your student ID" });
@@ -116,9 +116,21 @@ export async function signup(req: Request, res: Response): Promise<void> {
       assignment: userAllowed.assignment,
     });
 
+    const token = jwt.sign(
+      { userId: newUser._id },
+      env.jwtSecret,
+      { expiresIn: env.jwtExpiresIn as jwt.SignOptions["expiresIn"] },
+    );
+
     res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: env.cookieSecure,
+        sameSite: "lax",
+        maxAge: COOKIE_MAX_AGE_MS,
+      })
       .status(200)
-      .json({ msg: "successful signup", response: newUser });
+      .json({ msg: "successful signup", role: newUser.role, token });
   } catch (error: unknown) {
     res.status(500).json({
       msg: "Internal Server Error",

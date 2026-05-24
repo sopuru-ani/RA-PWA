@@ -17,6 +17,7 @@ export async function addAllowedUser(
 ): Promise<void> {
   await connectDB();
   const body = req.body;
+  console.log(body);
 
   try {
     const allowed = await AuthorizedUser.create({

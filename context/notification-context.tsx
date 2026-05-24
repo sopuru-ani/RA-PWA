@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { AnimatePresence } from "framer-motion";
 
@@ -36,6 +37,7 @@ export function NotificationProvider({
   children: React.ReactNode;
 }) {
   const [notif, setNotif] = useState<NotifItemsProps | null>(null);
+  const pathname = usePathname();
 
   function show(data: Omit<NotifItemsProps, "id">) {
     setNotif({
@@ -69,6 +71,12 @@ export function NotificationProvider({
 
     return () => clearTimeout(timer);
   }, [notif]);
+
+  // clear notifications on route change
+  useEffect(() => {
+    if (!notif) return;
+    hide();
+  }, [pathname]);
 
   return (
     <NotificationContext.Provider value={{ notif, show, hide }}>

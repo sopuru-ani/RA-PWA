@@ -7,7 +7,7 @@ export interface IUser extends Document {
     email: string;
     hashedPassword: string;
     studentId?: string;
-    role: 'RA' | 'GA' | 'Admin';
+    role: 'RA' | 'GA' | 'Admin' | 'SA';
     authProvider: 'local' | 'sso';
     providerId?: string;
     community: string[];
@@ -22,8 +22,8 @@ const UserSchema = new mongoose.Schema<IUser>({
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, unique: true },
     hashedPassword: { type: String, required: true },
-    studentId: { type: String, trim: true, required: function () { return this.role === 'RA' }, unique: true },
-    role: { type: String, required: true, enum: ['RA', 'GA', 'Admin'] },
+    studentId: { type: String, trim: true, required: function () { return this.role === 'RA' || this.role === 'SA' }, unique: true },
+    role: { type: String, required: true, enum: ['RA', 'GA', 'Admin', 'SA'] },
     authProvider: { type: String, required: true, enum: ['local', 'sso'], trim: true },
     providerId: String,
     community: { type: [String], default: [] },

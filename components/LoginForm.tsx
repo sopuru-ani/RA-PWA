@@ -102,7 +102,7 @@ function LoginForm({ setLoading, loading, show }: Props) {
   }
 
   return (
-    <form onSubmit={login} className="-mt-3">
+    <form onSubmit={login} noValidate className="-mt-3">
       <div className="flex flex-col gap-6">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>

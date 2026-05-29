@@ -53,6 +53,15 @@ function RAMore({ label, icon: Icon, className }: NavItemProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 mx-2" align="start">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuItem>Programs</DropdownMenuItem>
+            <DropdownMenuItem>Create a Program</DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuItem>Calendar</DropdownMenuItem>
+          <DropdownMenuGroup>
+            <DropdownMenuItem>Profile(subject to change)</DropdownMenuItem>
+            <DropdownMenuItem>Settings</DropdownMenuItem>
+          </DropdownMenuGroup>
 
           <DropdownMenuGroup>
             <DropdownMenuSub>

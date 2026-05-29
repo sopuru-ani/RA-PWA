@@ -10,6 +10,9 @@ router.post("/login", asyncHandler(authController.login));
 // POST /api/auth/signup — register an authorized user
 router.post("/signup", asyncHandler(authController.signup));
 
+// POST /api/auth/verify-email - verifies that an email can signup
+router.post("/verify-email", asyncHandler(authController.verifyEmail));
+
 // GET /api/auth/signup — debug lookup (legacy behavior)
 router.get("/signup", asyncHandler(authController.signupDebugGet));
 

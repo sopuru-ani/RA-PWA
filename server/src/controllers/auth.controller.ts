@@ -55,6 +55,29 @@ export async function login(req: Request, res: Response): Promise<void> {
   }
 }
 
+export async function verifyEmail(req: Request, res: Response): Promise<void> {
+  await connectDB();
+  const { email } = req.body;
+
+  if (!email) {
+    res.status(400).json({ msg: "Email field is required" });
+    return;
+  }
+
+  const userAllowed = await AuthorizedUser.findOne({ email });
+  if (!userAllowed) {
+    res.status(401).json({ msg: "You aren't authorized to sign up" });
+    return;
+  }
+
+  const user = await User.findOne({ email });
+  if (user) {
+    res.status(400).json({ msg: "Account already exists" });
+    return;
+  }
+  res.status(200).json({ msg: "Email is valid" });
+}
+
 export async function signup(req: Request, res: Response): Promise<void> {
   await connectDB();
   const body = req.body;

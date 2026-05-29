@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Eye, EyeOff, Check, X } from "lucide-react";
+import { Eye, EyeOff, Check, X, ArrowLeftCircle } from "lucide-react";
 
 import { useState, Dispatch, SetStateAction } from "react";
 import { redirect } from "next/navigation";
@@ -14,6 +14,7 @@ import { apiFetch, setAuthToken } from "@/lib/api-client";
 interface Props {
   setLoading: Dispatch<SetStateAction<boolean>>;
   loading: boolean;
+  email: string;
 
   show: (notif: {
     msg: string;
@@ -23,11 +24,11 @@ interface Props {
   }) => void;
 }
 
-function SignupForm({ setLoading, loading, show }: Props) {
+function SignupForm({ setLoading, loading, show, email }: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [studentId, setStudentId] = useState("");
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [hidePassword, setHidePassword] = useState(true);
@@ -225,7 +226,8 @@ function SignupForm({ setLoading, loading, show }: Props) {
             placeholder="m@example.com"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            disabled
+            // onChange={(e) => setEmail(e.target.value)}
             className="px-3 py-5 pr-10"
           />
         </div>
@@ -371,7 +373,7 @@ function SignupForm({ setLoading, loading, show }: Props) {
 
       <Button
         type="submit"
-        className="w-full text-white mt-4"
+        className="w-full text-white mt-4 px-3 py-5 hover:cursor-pointer"
         disabled={loading}
       >
         {loading ? "..." : "Signup"}

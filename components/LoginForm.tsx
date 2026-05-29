@@ -162,7 +162,7 @@ function LoginForm({ setLoading, loading, show }: Props) {
 
       <Button
         type="submit"
-        className="w-full text-white mt-4"
+        className="w-full text-white mt-4 px-3 py-5 hover:cursor-pointer"
         disabled={loading}
       >
         {loading ? "..." : "Login"}

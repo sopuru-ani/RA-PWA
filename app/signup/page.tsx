@@ -16,6 +16,11 @@ import {
 import Link from "next/link";
 
 import SignupForm from "@/components/SignupForm";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-client";
+import { ArrowLeftCircle } from "lucide-react";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -34,9 +39,72 @@ function Logo({ className }: { className?: string }) {
 }
 
 function SignUp() {
-  const { show } = useNotification();
+  const { show, hide } = useNotification();
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [isEmailValid, setIsEmailValid] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+
+  async function verifyEmail() {
+    try {
+      if (!email) {
+        show({
+          msg: "Please enter your email",
+          type: "error",
+          closable: true,
+          duration: null,
+        });
+        return;
+      } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          show({
+            msg: "Please enter a valid email",
+            type: "error",
+            closable: true,
+            duration: null,
+          });
+          return;
+        } else {
+          hide();
+        }
+      }
+      const response = await apiFetch("api/auth/verify-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      let result: { msg?: string } = {};
+      try {
+        result = await response.json();
+      } catch {
+        result = { msg: "Unexpected server response" };
+      }
+      if (response.ok) {
+        setIsEmailValid(true);
+      } else {
+        setIsEmailValid(false);
+        console.log(result.msg);
+
+        show({
+          msg: result.msg || "Something went wrong",
+          type: "error",
+          closable: true,
+          duration: null,
+        });
+      }
+    } catch (error) {
+      show({
+        msg: "Something went wrong",
+        type: "error",
+        closable: true,
+        duration: null,
+      });
+    }
+  }
 
   return (
     <div className="min-h-dvh flex flex-col bg-background relative overflow-hidden">
@@ -60,55 +128,120 @@ function SignUp() {
         </Link>
       </header>
 
-      {/* Main content */}
+      {isEmailValid && email ? (
+        <>
+          {/* Main content */}
 
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:p-6">
-        <div className="w-full max-w-xl">
-          <Card className="border-none shadow-none bg-transparent py-4">
-            <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-3xl font-bold">
-                Create an account
-              </CardTitle>
+          <main className="relative z-10 flex-1 flex items-center justify-center px-4 sm:p-6">
+            <div className="w-full max-w-xl">
+              <Card className="border-none shadow-none bg-transparent py-4">
+                <CardHeader className="space-y-1 pb-4">
+                  <CardTitle className="text-3xl font-bold flex flex-row items-center gap-2">
+                    <ArrowLeftCircle
+                      className="w-7 h-7 text-muted-foreground hover:cursor-pointer"
+                      onClick={() => setIsEmailValid(false)}
+                    />
+                    Create an account
+                  </CardTitle>
 
-              <CardDescription>
-                Enter your details below to get started with Domus
-              </CardDescription>
-            </CardHeader>
+                  <CardDescription>
+                    Enter your details below to get started with Domus
+                  </CardDescription>
+                </CardHeader>
 
-            <CardContent>
-              <SignupForm
-                show={show}
-                setLoading={setLoading}
-                loading={loading}
-              />
-            </CardContent>
+                <CardContent>
+                  <SignupForm
+                    show={show}
+                    setLoading={setLoading}
+                    loading={loading}
+                    email={email}
+                  />
+                </CardContent>
 
-            <CardFooter className="flex-col gap-4 pt-2">
-              <div className="relative w-full">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
+                <CardFooter className="flex-col gap-4 pt-2">
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
 
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="rounded-sm bg-linear-to-br from-primary/5 via-background to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5 px-2 text-muted-foreground">
-                    Already a member?
-                  </span>
-                </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="rounded-sm bg-linear-to-br from-primary/5 via-background to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5 px-2 text-muted-foreground">
+                        Already a member?
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground text-center">
+                    Already have an account?{" "}
+                    <Link
+                      href="/login"
+                      className="text-primary font-medium hover:underline"
+                    >
+                      Log in
+                    </Link>
+                  </p>
+                </CardFooter>
+              </Card>
+            </div>
+          </main>
+        </>
+      ) : (
+        <>
+          <main className="z-10 flex-1 flex items-center justify-center px-4 sm:p-6">
+            <div className="w-full max-w-xl flex flex-col gap-5">
+              <div className="w-full text-center">
+                <p className="text-3xl font-bold">Create Account</p>
+                <p className="text-muted-foreground text-sm">
+                  Enter your email to continue
+                </p>
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Input your Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="px-3 py-5 pr-10"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full text-white hover:cursor-pointer px-3 py-5"
+                onClick={() => {
+                  verifyEmail();
+                }}
+              >
+                Verify your email
+              </Button>
+              <div className="flex flex-col gap-4 pt-2">
+                <div className="relative w-full">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
 
-              <p className="text-sm text-muted-foreground text-center">
-                Already have an account?{" "}
-                <Link
-                  href="/login"
-                  className="text-primary font-medium hover:underline"
-                >
-                  Log in
-                </Link>
-              </p>
-            </CardFooter>
-          </Card>
-        </div>
-      </main>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="rounded-sm bg-linear-to-br from-primary/5 via-background to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5 px-2 text-muted-foreground">
+                      Already a member?
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground text-center">
+                  Already have an account?{" "}
+                  <Link
+                    href="/login"
+                    className="text-primary font-medium hover:underline"
+                  >
+                    Log in
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </main>
+        </>
+      )}
 
       {/* Footer */}
 

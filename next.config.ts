@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
 import withPWA from "next-pwa";
 import runtimeCaching from "next-pwa/cache";
+import path from "path";
+
 
 const nextConfig: any = {
   reactStrictMode: true,
+  // transpilePackages: ['tony-calendar'],
+  turbopack: {
+    root: path.join(__dirname, ".."),
+  },
   allowedDevOrigins: [
     "10.238.204.166",
     "10.247.136.150",
@@ -19,8 +25,6 @@ const nextConfig: any = {
     "https://ra-pwa.vercel.app"
   ],
 
-  // Turbopack optional
-  turbopack: {},
 
   // ✅ Enable App Router explicitly
   

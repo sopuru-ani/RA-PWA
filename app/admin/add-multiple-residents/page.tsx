@@ -458,7 +458,7 @@ function EditableCell({
       <span className="text-sm">
         {value || <span className="italic opacity-50">empty</span>}
       </span>
-      <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-50 flex-shrink-0 transition-opacity" />
+      <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-50 shrink-0 transition-opacity" />
     </div>
   );
 }

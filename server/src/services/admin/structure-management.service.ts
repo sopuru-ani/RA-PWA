@@ -10,7 +10,7 @@ import {
   AuthorizedUser,
   Incident,
   Roomcheck,
-  ResidentAdditionRequest,
+  ResidentChangeRequest,
   type RoomLean,
   type CommunityLean,
   type SectionStaffLean,
@@ -105,7 +105,7 @@ export async function renameCommunity(
         CommunityStaff.updateMany(filter, setCommunity, { session }),
         Incident.updateMany(filter, setCommunity, { session }),
         Roomcheck.updateMany(filter, setCommunity, { session }),
-        ResidentAdditionRequest.updateMany(filter, setCommunity, { session }),
+        ResidentChangeRequest.updateMany(filter, setCommunity, { session }),
       ]);
 
       const users = await User.find({ community: from }).session(session);
@@ -148,7 +148,7 @@ export async function deleteCommunity(communityName: string): Promise<void> {
         CommunityStaff.deleteMany({ community: name }, { session }),
         Roomcheck.deleteMany({ community: name }, { session }),
         Incident.deleteMany({ community: name }, { session }),
-        ResidentAdditionRequest.deleteMany({ community: name }, { session }),
+        ResidentChangeRequest.deleteMany({ community: name }, { session }),
       ]);
 
       const users = await User.find({ community: name }).session(session);
@@ -233,7 +233,7 @@ export async function renameSection(
         SectionStaff.updateMany(filter, setSection, { session }),
         Incident.updateMany(filter, setSection, { session }),
         Roomcheck.updateMany(filter, setSection, { session }),
-        ResidentAdditionRequest.updateMany(filter, setSection, { session }),
+        ResidentChangeRequest.updateMany(filter, setSection, { session }),
       ]);
 
       const ras = await User.find({
@@ -298,7 +298,7 @@ export async function removeSection(
     );
   }
 
-  const pending = await ResidentAdditionRequest.countDocuments({
+  const pending = await ResidentChangeRequest.countDocuments({
     community: communityName,
     section: canonical,
     status: "pending",

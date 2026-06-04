@@ -27,15 +27,28 @@ export type GADashboardStats = {
   myPendingRequests: number;
 };
 
+export type ResidentChangeRequestType = "add" | "update" | "remove";
+
+export type ResidentChangeRequestStatus =
+  | "pending"
+  | "approved"
+  | "rejected";
+
 export type ResidentRequestListItem = {
   _id: string;
-  status: "pending" | "approved" | "rejected";
+  residentId?: string;
+  requestType?: ResidentChangeRequestType;
+  status: ResidentChangeRequestStatus;
   community: string;
   section: string;
   room: string;
   fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   studentId: string;
+  notes?: string;
   createdAt: string;
   rejectionReason?: string;
+  removalReason?: string;
 };

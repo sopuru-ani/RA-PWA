@@ -2,8 +2,8 @@ import type { Response } from "express";
 import { connectDB } from "../../lib/connect.js";
 import type { AuthenticatedRequest } from "../../middleware/auth.js";
 import * as structure from "../../services/admin/structure-management.service.js";
-import { Room, Resident } from "../../lib/models.js";
-import { attachVacancyToRooms } from "../../../db/roomVacancy.js";
+import { Room } from "../../lib/models.js";
+import { listRoomsWithVacancy } from "../../services/housing/room-assignment.service.js";
 
 function communityParam(req: AuthenticatedRequest): string {
   return decodeURIComponent(req.params.community);
@@ -115,10 +115,7 @@ export async function listRoomsHandler(
     cursor,
   });
 
-  const residents = await Resident.find({ community })
-    .select("community section room")
-    .lean<{ community: string; section: string; room: string }[]>();
-  const items = attachVacancyToRooms(result.items, residents);
+  const items = await listRoomsWithVacancy(community, result.items);
 
   res.status(200).json({
     msg: "Rooms",

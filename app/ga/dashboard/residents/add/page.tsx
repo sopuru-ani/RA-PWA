@@ -18,6 +18,7 @@ import { apiFetch } from "@/lib/api-client";
 import { useNotification } from "@/context/notification-context";
 import { useGASession } from "@/context/GASessionContext";
 import { useRouter } from "next/navigation";
+import ConfirmActionDialog from "@/components/housing/ConfirmActionDialog";
 
 export default function GAAddResidentPage() {
   const { community } = useGASession();
@@ -34,8 +35,7 @@ export default function GAAddResidentPage() {
     notes: "",
   });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit() {
     setLoading(true);
     try {
       const res = await apiFetch("api/ga/resident-requests", {
@@ -85,7 +85,11 @@ export default function GAAddResidentPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        noValidate
+        className="space-y-4"
+      >
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label>First name</Label>
@@ -160,9 +164,17 @@ export default function GAAddResidentPage() {
             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
           />
         </div>
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Submitting..." : "Submit for approval"}
-        </Button>
+        <ConfirmActionDialog
+          title="Submit resident for approval?"
+          description="An administrator must approve this addition before the resident appears in the system."
+          confirmLabel="Submit"
+          onConfirm={handleSubmit}
+          trigger={
+            <Button type="button" disabled={loading} className="w-full">
+              {loading ? "Submitting..." : "Submit for approval"}
+            </Button>
+          }
+        />
       </form>
     </div>
   );

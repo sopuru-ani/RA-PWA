@@ -4,7 +4,7 @@ import {
   SectionStaff,
   CommunityStaff,
   User,
-  ResidentAdditionRequest,
+  ResidentChangeRequest,
   Incident,
   type CommunityLean,
   type SectionStaffLean,
@@ -51,7 +51,7 @@ export async function getCommunityOverviewStats(communityName: string) {
     await Promise.all([
       Resident.countDocuments({ community: communityName }),
       SectionStaff.countDocuments({ community: communityName }),
-      ResidentAdditionRequest.countDocuments({
+      ResidentChangeRequest.countDocuments({
         community: communityName,
         status: "pending",
       }),

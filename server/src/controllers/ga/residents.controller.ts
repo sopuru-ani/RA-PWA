@@ -6,12 +6,17 @@ import {
   listResidents,
   getResidentById,
 } from "../../services/housing/residents.service.js";
-import type { ResidentRequestPayload } from "../../../db/residentAdditionRequest.model.js";
+import type {
+  ResidentRequestPayload,
+  ResidentUpdateRequestPayload,
+} from "../../../db/residentChangeRequest.model.js";
 import {
   createResidentRequest,
   createBulkResidentRequests,
-  listResidentRequests,
-} from "../../services/housing/resident-requests.service.js";
+  listResidentChangeRequests,
+  createResidentUpdateRequest,
+  createResidentRemoveRequest,
+} from "../../services/housing/resident-change-requests.service.js";
 
 export async function listResidentsHandler(
   req: AuthenticatedRequest,
@@ -59,7 +64,53 @@ export async function submitResidentRequest(
 ): Promise<void> {
   await connectDB();
   const community = requirePrimaryCommunity(req.dbUser!);
-  const body = req.body as ResidentRequestPayload;
+  const body = req.body as ResidentRequestPayload & { requestType?: string };
+
+  if (body.requestType === "update") {
+    const { residentId, ...updates } = body as ResidentRequestPayload & {
+      residentId?: string;
+      requestType?: string;
+    };
+    if (!residentId) {
+      res.status(400).json({ msg: "residentId is required for update requests" });
+      return;
+    }
+    const result = await createResidentUpdateRequest(
+      req.dbUser!,
+      residentId,
+      updates as ResidentUpdateRequestPayload,
+      community,
+    );
+    res.status(201).json({
+      msg: "Update request submitted for admin approval",
+      ...result,
+    });
+    return;
+  }
+
+  if (body.requestType === "remove") {
+    const { residentId, removalReason } = body as {
+      residentId?: string;
+      removalReason?: string;
+      requestType?: string;
+    };
+    if (!residentId) {
+      res.status(400).json({ msg: "residentId is required for removal requests" });
+      return;
+    }
+    const result = await createResidentRemoveRequest(
+      req.dbUser!,
+      residentId,
+      community,
+      removalReason,
+    );
+    res.status(201).json({
+      msg: "Removal request submitted for admin approval",
+      ...result,
+    });
+    return;
+  }
+
   const result = await createResidentRequest(req.dbUser!, {
     ...body,
     community,
@@ -99,12 +150,12 @@ export async function listMyRequests(
   const cursor =
     typeof req.query.cursor === "string" ? req.query.cursor : undefined;
 
-  const result = await listResidentRequests({
+  const result = await listResidentChangeRequests({
     limit,
     status,
     submittedBy: String(req.dbUser!._id),
     cursor,
   });
 
-  res.status(200).json({ msg: "My resident requests", ...result });
+  res.status(200).json({ msg: "My resident change requests", ...result });
 }

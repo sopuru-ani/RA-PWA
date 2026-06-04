@@ -1,11 +1,15 @@
 import mongoose, { Document, Model, InferSchemaType } from "mongoose";
 
-export type ResidentRequestStatus = "pending" | "approved" | "rejected";
+export type ResidentChangeRequestStatus = "pending" | "approved" | "rejected";
 
-export type ResidentRequestSubmitterRole = "GA" | "SA";
+export type ResidentChangeRequestType = "add" | "update" | "remove";
 
-export interface IResidentAdditionRequest extends Document {
-  status: ResidentRequestStatus;
+export type ResidentChangeSubmitterRole = "GA" | "SA";
+
+export interface IResidentChangeRequest extends Document {
+  requestType: ResidentChangeRequestType;
+  status: ResidentChangeRequestStatus;
+  residentId?: mongoose.Types.ObjectId;
   community: string;
   section: string;
   room: string;
@@ -15,8 +19,10 @@ export interface IResidentAdditionRequest extends Document {
   email: string;
   studentId: string;
   notes?: string;
+  previousSnapshot?: Record<string, unknown>;
+  removalReason?: string;
   submittedBy: mongoose.Types.ObjectId;
-  submittedByRole: ResidentRequestSubmitterRole;
+  submittedByRole: ResidentChangeSubmitterRole;
   submittedByEmail: string;
   batchId?: string;
   batchRowIndex?: number;
@@ -27,14 +33,21 @@ export interface IResidentAdditionRequest extends Document {
   updatedAt: Date;
 }
 
-const ResidentAdditionRequestSchema = new mongoose.Schema<IResidentAdditionRequest>(
+const ResidentChangeRequestSchema = new mongoose.Schema<IResidentChangeRequest>(
   {
+    requestType: {
+      type: String,
+      required: true,
+      enum: ["add", "update", "remove"],
+      default: "add",
+    },
     status: {
       type: String,
       required: true,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    residentId: { type: mongoose.Schema.Types.ObjectId, ref: "Resident" },
     community: { type: String, required: true, trim: true },
     section: { type: String, required: true, trim: true },
     room: { type: String, required: true, trim: true },
@@ -44,6 +57,8 @@ const ResidentAdditionRequestSchema = new mongoose.Schema<IResidentAdditionReque
     email: { type: String, required: true, trim: true },
     studentId: { type: String, required: true, trim: true },
     notes: String,
+    previousSnapshot: { type: mongoose.Schema.Types.Mixed },
+    removalReason: String,
     submittedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -65,25 +80,30 @@ const ResidentAdditionRequestSchema = new mongoose.Schema<IResidentAdditionReque
   },
 );
 
-ResidentAdditionRequestSchema.index({ status: 1, community: 1, createdAt: -1 });
-ResidentAdditionRequestSchema.index({ submittedBy: 1, status: 1, createdAt: -1 });
-ResidentAdditionRequestSchema.index({ batchId: 1 });
-ResidentAdditionRequestSchema.index(
+ResidentChangeRequestSchema.index({ status: 1, community: 1, createdAt: -1 });
+ResidentChangeRequestSchema.index({ submittedBy: 1, status: 1, createdAt: -1 });
+ResidentChangeRequestSchema.index({ batchId: 1 });
+ResidentChangeRequestSchema.index(
   { email: 1, status: 1 },
   { partialFilterExpression: { status: "pending" } },
 );
+ResidentChangeRequestSchema.index(
+  { residentId: 1, status: 1 },
+  { partialFilterExpression: { status: "pending" } },
+);
 
-const ResidentAdditionRequest: Model<IResidentAdditionRequest> =
-  mongoose.models.ResidentAdditionRequest ||
-  mongoose.model<IResidentAdditionRequest>(
-    "ResidentAdditionRequest",
-    ResidentAdditionRequestSchema,
+const ResidentChangeRequest: Model<IResidentChangeRequest> =
+  mongoose.models.ResidentChangeRequest ||
+  mongoose.model<IResidentChangeRequest>(
+    "ResidentChangeRequest",
+    ResidentChangeRequestSchema,
+    "residentadditionrequests",
   );
 
-export default ResidentAdditionRequest;
+export default ResidentChangeRequest;
 
-export type ResidentAdditionRequestLean = InferSchemaType<
-  typeof ResidentAdditionRequestSchema
+export type ResidentChangeRequestLean = InferSchemaType<
+  typeof ResidentChangeRequestSchema
 > & { _id: string };
 
 export type ResidentRequestPayload = {
@@ -97,3 +117,21 @@ export type ResidentRequestPayload = {
   room: string;
   notes?: string;
 };
+
+export type ResidentUpdateRequestPayload = {
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  email?: string;
+  studentId?: string;
+  notes?: string;
+};
+
+export const GA_UPDATABLE_FIELDS = [
+  "firstName",
+  "lastName",
+  "fullName",
+  "email",
+  "studentId",
+  "notes",
+] as const;

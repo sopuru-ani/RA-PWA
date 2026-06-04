@@ -7,7 +7,7 @@ import {
   Resident,
   Community,
   SectionStaff,
-  ResidentAdditionRequest,
+  ResidentChangeRequest,
 } from "../../lib/models.js";
 
 export async function getDashboard(
@@ -40,7 +40,7 @@ export async function getDashboard(
         },
       }),
       SectionStaff.countDocuments(),
-      ResidentAdditionRequest.countDocuments({ status: "pending" }),
+      ResidentChangeRequest.countDocuments({ status: "pending" }),
     ]);
 
     const roleCounts = Object.fromEntries(

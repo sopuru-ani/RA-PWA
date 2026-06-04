@@ -3,7 +3,7 @@ import { connectDB } from "../../lib/connect.js";
 import type { AuthenticatedRequest } from "../../middleware/auth.js";
 import { requirePrimaryCommunity } from "../../lib/community-scope.js";
 import { getCommunityDetail, getCommunityOverviewStats } from "../../services/housing/community.service.js";
-import { ResidentAdditionRequest } from "../../lib/models.js";
+import { ResidentChangeRequest } from "../../lib/models.js";
 
 export async function getDashboard(
   req: AuthenticatedRequest,
@@ -16,7 +16,7 @@ export async function getDashboard(
   const [detail, stats, myPending] = await Promise.all([
     getCommunityDetail(community),
     getCommunityOverviewStats(community),
-    ResidentAdditionRequest.countDocuments({
+    ResidentChangeRequest.countDocuments({
       submittedBy: dbUser._id,
       status: "pending",
     }),

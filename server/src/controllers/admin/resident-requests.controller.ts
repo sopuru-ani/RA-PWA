@@ -1,12 +1,12 @@
 import type { Response } from "express";
 import { connectDB } from "../../lib/connect.js";
 import type { AuthenticatedRequest } from "../../middleware/auth.js";
-import { ResidentAdditionRequest } from "../../lib/models.js";
+import { ResidentChangeRequest } from "../../lib/models.js";
 import {
-  listResidentRequests,
-  promoteRequestToResident,
-  rejectResidentRequest,
-} from "../../services/housing/resident-requests.service.js";
+  listResidentChangeRequests,
+  approveResidentChangeRequest,
+  rejectResidentChangeRequest,
+} from "../../services/housing/resident-change-requests.service.js";
 
 export async function listPendingRequests(
   req: AuthenticatedRequest,
@@ -18,17 +18,22 @@ export async function listPendingRequests(
     typeof req.query.status === "string" ? req.query.status : "pending";
   const community =
     typeof req.query.community === "string" ? req.query.community : undefined;
+  const requestType =
+    typeof req.query.requestType === "string"
+      ? req.query.requestType
+      : undefined;
   const cursor =
     typeof req.query.cursor === "string" ? req.query.cursor : undefined;
 
-  const result = await listResidentRequests({
+  const result = await listResidentChangeRequests({
     limit,
     status,
     community,
+    requestType,
     cursor,
   });
 
-  res.status(200).json({ msg: "Resident requests", ...result });
+  res.status(200).json({ msg: "Resident change requests", ...result });
 }
 
 export async function getRequest(
@@ -36,7 +41,7 @@ export async function getRequest(
   res: Response,
 ): Promise<void> {
   await connectDB();
-  const request = await ResidentAdditionRequest.findById(req.params.id).lean();
+  const request = await ResidentChangeRequest.findById(req.params.id).lean();
   if (!request) {
     res.status(404).json({ msg: "Request not found" });
     return;
@@ -49,11 +54,11 @@ export async function approveRequest(
   res: Response,
 ): Promise<void> {
   await connectDB();
-  await promoteRequestToResident(
+  await approveResidentChangeRequest(
     req.params.id,
     String(req.dbUser!._id),
   );
-  res.status(200).json({ msg: "Resident approved and added" });
+  res.status(200).json({ msg: "Request approved" });
 }
 
 export async function rejectRequest(
@@ -62,7 +67,7 @@ export async function rejectRequest(
 ): Promise<void> {
   await connectDB();
   const { reason } = req.body as { reason?: string };
-  await rejectResidentRequest(
+  await rejectResidentChangeRequest(
     req.params.id,
     String(req.dbUser!._id),
     reason,

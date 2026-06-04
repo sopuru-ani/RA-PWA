@@ -92,6 +92,18 @@ router.get(
   "/residents/:id",
   asyncHandler(residentsController.getResident),
 );
+router.patch(
+  "/residents/:id",
+  asyncHandler(residentsController.updateResident),
+);
+router.delete(
+  "/residents/:id",
+  asyncHandler(residentsController.deleteResident),
+);
+router.post(
+  "/residents/:id/move",
+  asyncHandler(residentsController.moveResident),
+);
 
 router.get("/structure", asyncHandler(structureController.getStructure));
 

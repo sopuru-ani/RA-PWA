@@ -65,6 +65,8 @@ export type CommunityDetail = {
 export type ResidentWithStaff = {
   _id: string;
   fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   studentId: string;
   community: string;
@@ -73,4 +75,36 @@ export type ResidentWithStaff = {
   notes?: string;
   raEmail?: string;
   gaEmail?: string;
+};
+
+export type ResidentChangeRequestType = "add" | "update" | "remove";
+
+export type ResidentChangeRequestStatus =
+  | "pending"
+  | "approved"
+  | "rejected";
+
+/** Matches API lean documents from ResidentChangeRequest (residentadditionrequests collection). */
+export type ResidentChangeRequestItem = {
+  _id: string;
+  requestType?: ResidentChangeRequestType;
+  status: ResidentChangeRequestStatus;
+  residentId?: string;
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  studentId: string;
+  community: string;
+  section: string;
+  room: string;
+  notes?: string;
+  submittedByEmail: string;
+  batchId?: string;
+  batchRowIndex?: number;
+  previousSnapshot?: ResidentWithStaff;
+  removalReason?: string;
+  rejectionReason?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

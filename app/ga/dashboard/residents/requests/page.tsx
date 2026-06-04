@@ -42,7 +42,7 @@ export default function GAResidentRequestsPage() {
       <div>
         <h1 className="text-xl font-semibold">My requests</h1>
         <p className="text-sm text-muted-foreground">
-          Resident additions awaiting admin review
+          Additions, updates, and removals awaiting admin review
         </p>
       </div>
 
@@ -55,6 +55,12 @@ export default function GAResidentRequestsPage() {
               <CardContent className="py-3 text-sm space-y-1">
                 <div className="flex justify-between items-start gap-2">
                   <p className="font-medium">{r.fullName}</p>
+                  <div className="flex gap-1">
+                  {(r.requestType === "update" || r.requestType === "remove") && (
+                    <Badge variant="outline">
+                      {r.requestType === "remove" ? "Removal" : "Update"}
+                    </Badge>
+                  )}
                   <Badge
                     variant={
                       r.status === "approved"
@@ -66,6 +72,7 @@ export default function GAResidentRequestsPage() {
                   >
                     {r.status}
                   </Badge>
+                  </div>
                 </div>
                 <p className="text-muted-foreground">
                   {r.section} · Room {r.room}

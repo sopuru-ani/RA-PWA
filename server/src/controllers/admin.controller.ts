@@ -1,70 +1,16 @@
-import type { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { env } from "../config/env.js";
+import type { Response } from "express";
 import { connectDB } from "../lib/connect.js";
-import { getTokenFromRequest } from "../lib/token.js";
-import {
-  User,
-  Resident,
-  AuthorizedUser,
-  SectionStaff,
-} from "../lib/models.js";
+import type { AuthenticatedRequest } from "../middleware/auth.js";
+import { Resident, SectionStaff } from "../lib/models.js";
 import { buildStaffMap, omitStaffFields, staffKey } from "../../db/residentStaff.js";
 
-export async function addAllowedUser(
-  req: Request,
-  res: Response,
-): Promise<void> {
-  await connectDB();
-  const body = req.body;
-  console.log(body);
-
-  try {
-    const allowed = await AuthorizedUser.create({
-      email: body.email,
-      role: body.role,
-      isActive: body.isActive,
-      community: body.community,
-      assignment: body.assignment,
-      notes: body.notes,
-    });
-    res
-      .status(200)
-      .json({ msg: `${allowed.role} successfully added`, response: allowed });
-  } catch (error: unknown) {
-    res.status(500).json({
-      msg: "Error adding staff",
-      error: error instanceof Error ? error.message : "Unknown",
-    });
-  }
-}
-
 export async function seedResidents(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
 ): Promise<void> {
   await connectDB();
 
   try {
-    const token = getTokenFromRequest(req);
-    if (!token) {
-      res.status(401).json({ msg: "Unauthorized" });
-      return;
-    }
-
-    const decoded = jwt.verify(token, env.jwtSecret) as { userId: string };
-    const dbUser = await User.findById(decoded.userId);
-
-    if (!dbUser) {
-      res.status(401).json({ msg: "Unauthorized" });
-      return;
-    }
-
-    if (dbUser.role !== "Admin") {
-      res.status(403).json({ msg: dbUser.role });
-      return;
-    }
-
     const residents = req.body;
 
     if (!Array.isArray(residents) || residents.length === 0) {

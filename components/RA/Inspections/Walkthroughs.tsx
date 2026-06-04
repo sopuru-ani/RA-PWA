@@ -25,12 +25,16 @@ import { Plus, ArrowLeft, ChevronDownIcon } from "lucide-react";
 import Spinner from "@/components/RA/Spinner";
 
 interface Props {
-  w: InspectionSession;
+  w: InspectionSession & { section?: string };
+  walkthroughPath?: string;
 }
 
 import { apiFetch } from "@/lib/api-client";
 
-function Walkthroughs({ w }: Props) {
+function Walkthroughs({
+  w,
+  walkthroughPath = "api/ra/inspections/walkthrough",
+}: Props) {
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,12 +44,15 @@ function Walkthroughs({ w }: Props) {
     async function getWalkthroughs() {
       setLoading(true);
       try {
-        const response = await apiFetch("api/ra/inspections/walkthrough", {
+        const response = await apiFetch(walkthroughPath, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ sessionId: w.inspectionSession }),
+          body: JSON.stringify({
+            sessionId: w.inspectionSession,
+            ...(w.section ? { section: w.section } : {}),
+          }),
         });
 
         const {
@@ -72,7 +79,7 @@ function Walkthroughs({ w }: Props) {
       }
     }
     getWalkthroughs();
-  }, [open, w.inspectionSession]);
+  }, [open, w.inspectionSession, w.section, walkthroughPath, router]);
 
   return (
     <>

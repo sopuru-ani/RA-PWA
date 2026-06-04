@@ -6,11 +6,20 @@ interface NavItemProps {
   href: string;
   label: string;
   icon: React.ElementType[];
+  /** When true, any path under href counts as active (except exact /admin/dashboard) */
+  matchPrefix?: boolean;
 }
 
-export function NavItem({ href, label, icon: [Icon1, Icon2] }: NavItemProps) {
+export function NavItem({
+  href,
+  label,
+  icon: [Icon1, Icon2],
+  matchPrefix = false,
+}: NavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = matchPrefix
+    ? pathname === href || pathname.startsWith(`${href}/`)
+    : pathname === href;
 
   return (
     <Link

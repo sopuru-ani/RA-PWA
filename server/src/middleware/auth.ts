@@ -10,6 +10,8 @@ export interface AuthPayload {
   userId: string;
 }
 
+export type StaffRole = IUser["role"];
+
 export interface AuthenticatedRequest extends Request {
   auth?: AuthPayload;
   dbUser?: HydratedDocument<IUser>;
@@ -51,4 +53,24 @@ export async function requireAuth(
     }
     next(err);
   }
+}
+
+/** Requires an authenticated user whose role is one of the allowed roles */
+export function requireRole(...roles: StaffRole[]) {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): void => {
+    const dbUser = req.dbUser;
+    if (!dbUser) {
+      res.status(401).json({ msg: "Unauthorized" });
+      return;
+    }
+    if (!roles.includes(dbUser.role)) {
+      res.status(403).json({ msg: "Forbidden" });
+      return;
+    }
+    next();
+  };
 }

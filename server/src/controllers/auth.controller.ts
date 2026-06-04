@@ -5,6 +5,7 @@ import { env } from "../config/env.js";
 import { connectDB } from "../lib/connect.js";
 import { getTokenFromRequest } from "../lib/token.js";
 import { User, AuthorizedUser } from "../lib/models.js";
+import { applyStaffAssignments } from "../services/admin/assignment.service.js";
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -22,6 +23,11 @@ export async function login(req: Request, res: Response): Promise<void> {
   const user = await User.findOne({ email });
   if (!user) {
     res.status(404).json({ msg: "Account does not exist" });
+    return;
+  }
+
+  if (user.isActive === false) {
+    res.status(403).json({ msg: "This account has been deactivated" });
     return;
   }
 
@@ -70,6 +76,11 @@ export async function verifyEmail(req: Request, res: Response): Promise<void> {
     return;
   }
 
+  if (!userAllowed.isActive) {
+    res.status(403).json({ msg: "This invite is no longer active" });
+    return;
+  }
+
   const user = await User.findOne({ email });
   if (user) {
     res.status(400).json({ msg: "Account already exists" });
@@ -85,6 +96,11 @@ export async function signup(req: Request, res: Response): Promise<void> {
   const userAllowed = await AuthorizedUser.findOne({ email: body.email });
   if (!userAllowed) {
     res.status(401).json({ msg: "unauthorized" });
+    return;
+  }
+
+  if (!userAllowed.isActive) {
+    res.status(403).json({ msg: "This invite is no longer active" });
     return;
   }
 
@@ -137,6 +153,12 @@ export async function signup(req: Request, res: Response): Promise<void> {
       authProvider: "local",
       community: userAllowed.community,
       assignment: userAllowed.assignment,
+      isActive: true,
+    });
+
+    await applyStaffAssignments(newUser, {
+      userId: String(newUser._id),
+      isActive: true,
     });
 
     const token = jwt.sign(

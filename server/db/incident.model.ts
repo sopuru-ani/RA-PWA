@@ -1,5 +1,7 @@
 import mongoose, { Document, Model, InferSchemaType } from "mongoose";
 
+// reporterRole supports future SA incident submission
+
 interface IAttachment extends Document {
   id: string;
   filename: string;
@@ -15,6 +17,8 @@ export interface IIncident extends Document {
   room?: string;
   location?: string;
   reporter: string;
+  reporterUserId?: mongoose.Types.ObjectId;
+  reporterRole?: "RA" | "GA" | "SA";
   involved?: string[];
   type: "Policy Violation" | "Maintenance" | "Health and Safety" | "Other";
   title: string;
@@ -42,6 +46,8 @@ const IncidentSchema = new mongoose.Schema<IIncident>({
     room: { type: String, trim: true },
     location: { type: String, trim: true },
     reporter: { type: String, required: true, trim: true },
+    reporterUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    reporterRole: { type: String, enum: ["RA", "GA", "SA"], trim: true },
     involved: { type: [String], default: [] },
     type: { type: String, required: true, enum: ["Policy Violation", "Maintenance", "Health and Safety", "Other"], trim: true },
     title: { type: String, required: true, trim: true },

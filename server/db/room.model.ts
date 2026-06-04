@@ -20,6 +20,8 @@ const RoomSchema = new mongoose.Schema<IRoom>({
     createdAt: { type: Date, required: true, default: Date.now },
 });
 
+RoomSchema.index({ community: 1, section: 1, room: 1 }, { unique: true });
+
 const Room: Model<IRoom> = mongoose.models.Room || mongoose.model<IRoom>('Room', RoomSchema);
 
 export default Room;

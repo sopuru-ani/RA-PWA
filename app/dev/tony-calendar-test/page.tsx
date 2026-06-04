@@ -71,7 +71,7 @@ function Page() {
   return (
     <>
       <div className="h-dvh flex flex-col-reverse md:flex-row-reverse">
-        <div className="w-dvw flex-1 md:flex-none md:h-dvh md:w-[30%] shrink-0 border-t-2 md:border-l md:border-t-0">
+        <div className="w-dvw md:flex-none md:h-dvh md:w-[30%] shrink-0 border-t-2 md:border-l md:border-t-0">
           <div className="flex flex-row justify-between items-center border-b p-3">
             <p className="text-md">Events</p>
             <Button
@@ -85,7 +85,7 @@ function Page() {
           </div>
           <div>
             {selectedDayEvents.length > 0 ? (
-              <div className="flex flex-col gap-2 p-3 overflow-y-scroll max-h-[40dvh] md:max-h-full">
+              <div className="flex flex-col gap-2 p-3 overflow-y-scroll max-h-[25dvh] md:max-h-full">
                 {selectedDayEvents.map((event: CalendarEvent) => (
                   <div key={event.id} className="text-sm md:text-base">
                     <p className="text-md md:text-lg font-semibold">
@@ -104,7 +104,7 @@ function Page() {
             )}
           </div>
         </div>
-        <div className="flex-none md:flex-1 min-h-0">
+        <div className="flex-1 md:flex-1 min-h-0">
           <Calendar
             view={view}
             events={testEvents}

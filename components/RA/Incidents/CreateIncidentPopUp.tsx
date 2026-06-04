@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -51,7 +51,10 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [incidentType, setIncidentType] = useState("Maintenance");
-  const [section, setSection] = useState(user.assignment[0]);
+  const communitySections = communityInfo[0]?.section ?? [];
+  const defaultSection =
+    user.assignment[0] || communitySections[0] || "";
+  const [section, setSection] = useState(defaultSection);
   const [hour, setHour] = useState("12");
   const [minute, setMinute] = useState("00");
   const [meridiem, setMeridiem] = useState("AM");
@@ -59,10 +62,24 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
   // People involved state is now an array
   const [peopleInvolved, setPeopleInvolved] = useState([""]);
 
-  const filteredRooms = rooms
-    .filter((r) => r.section === section)
-    .sort((a, b) => a.room.localeCompare(b.room));
-  const [room, setRoom] = useState(filteredRooms[0].room);
+  const filteredRooms = useMemo(
+    () =>
+      rooms
+        .filter((r) => r.section === section)
+        .sort((a, b) => a.room.localeCompare(b.room)),
+    [rooms, section],
+  );
+  const [room, setRoom] = useState("");
+
+  useEffect(() => {
+    if (filteredRooms.length === 0) {
+      setRoom("");
+      return;
+    }
+    setRoom((prev) =>
+      filteredRooms.some((r) => r.room === prev) ? prev : filteredRooms[0].room,
+    );
+  }, [filteredRooms]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,7 +96,7 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
     // controlled values
     formData.append("type", incidentType);
     formData.append("section", section);
-    formData.append("room", room);
+    if (room) formData.append("room", room);
     formData.append("community", user.community[0]);
     // if (date) formData.append("incidentDate", date.toISOString());
     if (date) {
@@ -208,7 +225,7 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
                             <SelectValue placeholder="" />
                           </SelectTrigger>
                           <SelectContent>
-                            {communityInfo[0].section.map((sec) => (
+                            {communitySections.map((sec) => (
                               <SelectItem key={sec} value={sec}>
                                 {sec}
                               </SelectItem>
@@ -219,14 +236,20 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Room</label>
-                        <Select value={room} onValueChange={setRoom}>
+                        <Select value={room || undefined} onValueChange={setRoom}>
                           <SelectTrigger>
-                            <SelectValue placeholder="" />
+                            <SelectValue
+                              placeholder={
+                                filteredRooms.length
+                                  ? "Select room"
+                                  : "No rooms in section"
+                              }
+                            />
                           </SelectTrigger>
                           <SelectContent>
-                            {filteredRooms.map((room) => (
-                              <SelectItem key={room.room} value={room.room}>
-                                {room.room}
+                            {filteredRooms.map((r) => (
+                              <SelectItem key={r.room} value={r.room}>
+                                {r.room}
                               </SelectItem>
                             ))}
                           </SelectContent>

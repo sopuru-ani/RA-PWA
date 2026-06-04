@@ -14,6 +14,12 @@ import communityModule from "../../db/community.models.js";
 import incidentModule, { type IIncident } from "../../db/incident.model.js";
 import roomcheckModule from "../../db/roomcheck.model.js";
 import sectionStaffModule from "../../db/sectionStaff.model.js";
+import communityStaffModule, {
+  type ICommunityStaff,
+} from "../../db/communityStaff.model.js";
+import residentRequestModule, {
+  type IResidentAdditionRequest,
+} from "../../db/residentAdditionRequest.model.js";
 
 function resolveModel<T extends Document>(mod: unknown): Model<T> {
   const candidate = mod as { default?: Model<T> };
@@ -28,11 +34,18 @@ export const Community = resolveModel<Document>(communityModule);
 export const Incident = resolveModel<IIncident>(incidentModule);
 export const Roomcheck = resolveModel<Document>(roomcheckModule);
 export const SectionStaff = resolveModel<Document>(sectionStaffModule);
+export const CommunityStaff =
+  resolveModel<ICommunityStaff>(communityStaffModule);
+export const ResidentAdditionRequest =
+  resolveModel<IResidentAdditionRequest>(residentRequestModule);
 
-export type { IUser, IAuthorized, IRoom, IIncident };
+export type { IUser, IAuthorized, IRoom, IIncident, ICommunityStaff };
+export type { IResidentAdditionRequest };
 export type { RoomLean, RoomWithVacancy } from "../../db/room.model.js";
 export type { CommunityLean } from "../../db/community.models.js";
 export type { IncidentLean } from "../../db/incident.model.js";
 export type { ResidentLean } from "../../db/resident.model.js";
 export type { ResidentWithStaff, StaffEmails } from "../../db/residentStaff.js";
 export type { RoomcheckLean } from "../../db/roomcheck.model.js";
+export type { SectionStaffLean } from "../../db/sectionStaff.model.js";
+export type { CommunityStaffLean } from "../../db/communityStaff.model.js";

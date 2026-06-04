@@ -3,6 +3,8 @@ import authRoutes from "./auth.routes.js";
 import incidentsRoutes from "./incidents.routes.js";
 import raRoutes from "./ra.routes.js";
 import adminRoutes from "./admin.routes.js";
+import gaRoutes from "./ga.routes.js";
+import saRoutes from "./sa.routes.js";
 import devRoutes from "./dev.routes.js";
 
 /**
@@ -15,6 +17,8 @@ apiRouter.use("/auth", authRoutes);
 apiRouter.use("/incidents", incidentsRoutes);
 apiRouter.use("/ra", raRoutes);
 apiRouter.use("/admin", adminRoutes);
+apiRouter.use("/ga", gaRoutes);
+apiRouter.use("/sa", saRoutes);
 apiRouter.use("/dev", devRoutes);
 
 export default apiRouter;

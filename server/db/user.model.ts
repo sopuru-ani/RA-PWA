@@ -12,6 +12,7 @@ export interface IUser extends Document {
     providerId?: string;
     community: string[];
     assignment: string[];
+    isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -28,6 +29,7 @@ const UserSchema = new mongoose.Schema<IUser>({
     providerId: String,
     community: { type: [String], default: [] },
     assignment: { type: [String], default: [] },
+    isActive: { type: Boolean, required: true, default: true },
     createdAt: { type: Date, required: true, default: Date.now },
     updatedAt: { type: Date, required: true, default: Date.now }
 });

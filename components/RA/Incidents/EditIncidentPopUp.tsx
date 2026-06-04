@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -68,8 +68,9 @@ function EditIncidentPopUp({
     new Date(incident.incidentDate),
   );
   const [incidentType, setIncidentType] = useState<IncidentType>(incident.type);
+  const communitySections = communityInfo[0]?.section ?? [];
   const [section, setSection] = useState(
-    incident.section ?? user.assignment[0],
+    incident.section ?? user.assignment[0] ?? communitySections[0] ?? "",
   );
   // Add these state hooks near the top with your other state
   const [hour, setHour] = useState(
@@ -89,10 +90,27 @@ function EditIncidentPopUp({
   );
   const [resolved, setResolved] = useState<boolean>(incident.resolved ?? false);
 
-  const filteredRooms = rooms
-    .filter((r) => r.section === section)
-    .sort((a, b) => a.room.localeCompare(b.room));
-  const [room, setRoom] = useState(incident.room ?? filteredRooms[0].room);
+  const filteredRooms = useMemo(
+    () =>
+      rooms
+        .filter((r) => r.section === section)
+        .sort((a, b) => a.room.localeCompare(b.room)),
+    [rooms, section],
+  );
+  const [room, setRoom] = useState(
+    incident.room ?? filteredRooms[0]?.room ?? "",
+  );
+
+  useEffect(() => {
+    if (incident.room && section === incident.section) return;
+    if (filteredRooms.length === 0) {
+      setRoom("");
+      return;
+    }
+    setRoom((prev) =>
+      filteredRooms.some((r) => r.room === prev) ? prev : filteredRooms[0].room,
+    );
+  }, [filteredRooms, incident.room, incident.section, section]);
 
   // Dynamic involved fields state
   const [involvedList, setInvolvedList] = useState<string[]>(
@@ -248,7 +266,7 @@ function EditIncidentPopUp({
                             <SelectValue placeholder="" />
                           </SelectTrigger>
                           <SelectContent>
-                            {communityInfo[0].section.map((sec) => (
+                            {communitySections.map((sec) => (
                               <SelectItem key={sec} value={sec}>
                                 {sec}
                               </SelectItem>

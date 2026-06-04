@@ -73,6 +73,8 @@ function LoginForm({ setLoading, loading, show }: Props) {
             redirect("/admin/dashboard");
           } else if (result.role === "SA") {
             redirect("/sa/dashboard");
+          } else if (result.role === "GA") {
+            redirect("/ga/dashboard");
           } else {
             redirect("/ra/dashboard");
           }

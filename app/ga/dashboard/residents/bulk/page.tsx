@@ -27,9 +27,18 @@ export default function GABulkResidentsPage() {
         lockedCommunity={community.name}
         submitPath="api/ga/resident-requests/bulk"
         submitButtonLabel="Submit for approval"
-        successMessage={(r) =>
-          `${r.created ?? 0} submitted${r.failed ? `, ${r.failed} failed` : ""}.`
-        }
+        successMessage={(r) => {
+          const created = r.created ?? 0;
+          const failedCount = Array.isArray(r.failed)
+            ? r.failed.length
+            : typeof r.failed === "number"
+              ? r.failed
+              : 0;
+          if (failedCount === 0) {
+            return `${created} submitted for admin approval.`;
+          }
+          return `${created} submitted, ${failedCount} failed validation.`;
+        }}
       />
     </div>
   );

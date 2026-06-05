@@ -69,7 +69,7 @@ export default function GAResidentsPage() {
           <p className="text-sm text-muted-foreground">{community.name}</p>
         </div>
         <div className="flex flex-row gap-1">
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="text-white">
             <Link href="/ga/dashboard/residents/add">
               <UserPlus className="h-4 w-4 mr-1" />
               Add

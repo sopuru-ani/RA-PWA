@@ -111,6 +111,14 @@ router.get(
   "/resident-requests",
   asyncHandler(residentRequestsController.listPendingRequests),
 );
+router.post(
+  "/resident-requests/batches/:batchId/approve",
+  asyncHandler(residentRequestsController.approveBatch),
+);
+router.post(
+  "/resident-requests/batches/:batchId/reject",
+  asyncHandler(residentRequestsController.rejectBatch),
+);
 router.get(
   "/resident-requests/:id",
   asyncHandler(residentRequestsController.getRequest),

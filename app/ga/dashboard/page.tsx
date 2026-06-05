@@ -74,7 +74,7 @@ export default function GADashboardPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button asChild size="sm">
+        <Button asChild size="sm" className="text-white">
           <Link href="/ga/dashboard/residents/add">
             <UserPlus className="h-4 w-4 mr-1" />
             Add resident

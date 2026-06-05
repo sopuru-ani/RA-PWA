@@ -517,6 +517,75 @@ async function approveRemoveRequest(
   await request.save();
 }
 
+export async function approveBatchResidentChangeRequests(
+  batchId: string,
+  reviewerId: string,
+): Promise<{
+  approved: number;
+  failed: { requestId: string; fullName: string; message: string }[];
+}> {
+  const requests = await ResidentChangeRequest.find({
+    batchId,
+    status: "pending",
+  })
+    .sort({ batchRowIndex: 1, _id: 1 })
+    .lean<{ _id: unknown; fullName: string }[]>();
+
+  if (requests.length === 0) {
+    throw scopeError("No pending requests found for this batch", 404);
+  }
+
+  const failed: { requestId: string; fullName: string; message: string }[] =
+    [];
+  let approved = 0;
+
+  for (const request of requests) {
+    const requestId = String(request._id);
+    try {
+      await approveResidentChangeRequest(requestId, reviewerId);
+      approved++;
+    } catch (err) {
+      failed.push({
+        requestId,
+        fullName: request.fullName,
+        message: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  }
+
+  return { approved, failed };
+}
+
+export async function rejectBatchResidentChangeRequests(
+  batchId: string,
+  reviewerId: string,
+  reason?: string,
+): Promise<{ rejected: number }> {
+  const requests = await ResidentChangeRequest.find({
+    batchId,
+    status: "pending",
+  })
+    .sort({ batchRowIndex: 1, _id: 1 })
+    .select("_id")
+    .lean<{ _id: unknown }[]>();
+
+  if (requests.length === 0) {
+    throw scopeError("No pending requests found for this batch", 404);
+  }
+
+  let rejected = 0;
+  for (const request of requests) {
+    await rejectResidentChangeRequest(
+      String(request._id),
+      reviewerId,
+      reason,
+    );
+    rejected++;
+  }
+
+  return { rejected };
+}
+
 export async function rejectResidentChangeRequest(
   requestId: string,
   reviewerId: string,

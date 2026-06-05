@@ -18,13 +18,12 @@ function adminSuccessMessage(result: ImportSubmitResult): string {
   return `${success} succeeded, ${failed} failed.`;
 }
 
-export default function ResidentUploadPage() {
+export default function DevBulkImportPage() {
   return (
     <ResidentBulkImport
       submitPath="api/admin/seed-residents"
       submitButtonLabel="Push"
       variant="polished"
-      showAuthGate
       successMessage={adminSuccessMessage}
     />
   );

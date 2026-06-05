@@ -6,6 +6,8 @@ import {
   listResidentChangeRequests,
   approveResidentChangeRequest,
   rejectResidentChangeRequest,
+  approveBatchResidentChangeRequests,
+  rejectBatchResidentChangeRequests,
 } from "../../services/housing/resident-change-requests.service.js";
 
 export async function listPendingRequests(
@@ -73,4 +75,36 @@ export async function rejectRequest(
     reason,
   );
   res.status(200).json({ msg: "Request rejected" });
+}
+
+export async function approveBatch(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  await connectDB();
+  const result = await approveBatchResidentChangeRequests(
+    req.params.batchId,
+    String(req.dbUser!._id),
+  );
+  res.status(200).json({
+    msg: "Batch approval processed",
+    ...result,
+  });
+}
+
+export async function rejectBatch(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  await connectDB();
+  const { reason } = req.body as { reason?: string };
+  const result = await rejectBatchResidentChangeRequests(
+    req.params.batchId,
+    String(req.dbUser!._id),
+    reason,
+  );
+  res.status(200).json({
+    msg: "Batch rejected",
+    ...result,
+  });
 }

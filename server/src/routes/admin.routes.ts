@@ -88,6 +88,7 @@ router.get(
 );
 
 router.get("/residents", asyncHandler(residentsController.listResidents));
+router.post("/residents", asyncHandler(residentsController.createResident));
 router.get(
   "/residents/:id",
   asyncHandler(residentsController.getResident),

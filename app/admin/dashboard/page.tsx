@@ -106,7 +106,7 @@ export default function AdminDashboardPage() {
           <Link href="/admin/resident-requests">Review resident requests</Link>
         </Button>
         <Button asChild variant="outline" className="w-full">
-          <Link href="/admin/add-multiple-residents">Bulk import residents</Link>
+          <Link href="/admin/residents/bulk">Bulk add residents</Link>
         </Button>
       </div>
     </div>

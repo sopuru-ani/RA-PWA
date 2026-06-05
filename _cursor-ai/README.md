@@ -13,6 +13,7 @@ This folder holds documentation written during Cursor agent sessions so work sur
 | [sa-workflow-implementation.md](./sa-workflow-implementation.md) | Codebase overview, GA admin-approval audit, SA role plan + full implementation | — |
 | [admin-workflow-implementation.md](./admin-workflow-implementation.md) | Admin role plan + full implementation: API, UI shell, staff CRUD/deactivate, community pickers, AD display labels | — |
 | [ga-ad-and-admin-structure.md](./ga-ad-and-admin-structure.md) | GA/AD full workflow, resident approval queue, admin community/section/room CRUD, GA incidents & search fixes | — |
+| [admin-residents-add-bulk.md](./admin-residents-add-bulk.md) | Admin residents list Add/Bulk buttons, single-create API, add/bulk sub-pages, legacy bulk URL redirect | — |
 
 ## How to use these docs
 

@@ -7,11 +7,12 @@ import type { AuthenticatedRequest } from "../../middleware/auth.js";
 import {
   listResidents as listResidentsQuery,
   getResidentById,
+  createResidentAdmin,
   updateResidentAdmin,
   deleteResidentAdmin,
   moveResidentAdmin,
 } from "../../services/housing/residents.service.js";
-import type { ResidentUpdateRequestPayload } from "../../../db/residentChangeRequest.model.js";
+import type { ResidentUpdateRequestPayload, ResidentRequestPayload } from "../../../db/residentChangeRequest.model.js";
 
 export async function listResidents(
   req: AuthenticatedRequest,
@@ -41,6 +42,17 @@ export async function listResidents(
     items: result.items,
     nextCursor: result.nextCursor,
   });
+}
+
+export async function createResident(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  await connectDB();
+  const resident = await createResidentAdmin(
+    req.body as ResidentRequestPayload,
+  );
+  res.status(201).json({ msg: "Resident created", resident });
 }
 
 export async function getResident(

@@ -54,9 +54,6 @@ function AdminMore() {
       <DropdownMenuContent className="w-56 mx-2" align="start">
         <DropdownMenuLabel>Admin</DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Link href="/admin/add-multiple-residents">Bulk import residents</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
           <Link href="/admin/resident-requests">Resident requests</Link>
         </DropdownMenuItem>
         <DropdownMenuGroup>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState, Suspense } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,7 +10,7 @@ import ResidentListItem from "@/components/housing/ResidentListItem";
 import { apiFetch } from "@/lib/api-client";
 import type { ResidentWithStaff } from "@/types/admin";
 import Empty from "@/components/RA/Empty";
-import { Search, X } from "lucide-react";
+import { Search, UserPlus, Upload, X } from "lucide-react";
 
 function ResidentsPageContent() {
   const searchParams = useSearchParams();
@@ -56,15 +56,35 @@ function ResidentsPageContent() {
     setLoadingMore(false);
   }
 
+  const communityQuery = communityFilter
+    ? `?community=${encodeURIComponent(communityFilter)}`
+    : "";
+
   return (
     <div className="flex flex-col space-y-3 pb-4 mx-3 h-full">
-      <div>
-        <h1 className="text-xl font-semibold">Residents</h1>
-        <p className="text-sm text-muted-foreground">
-          {communityFilter
-            ? `Filtered: ${communityFilter}`
-            : "All communities"}
-        </p>
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h1 className="text-xl font-semibold">Residents</h1>
+          <p className="text-sm text-muted-foreground">
+            {communityFilter
+              ? `Filtered: ${communityFilter}`
+              : "All communities"}
+          </p>
+        </div>
+        <div className="flex flex-row gap-1">
+          <Button asChild size="sm" className="text-white">
+            <Link href={`/admin/residents/add${communityQuery}`}>
+              <UserPlus className="h-4 w-4 mr-1" />
+              Add
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/admin/residents/bulk${communityQuery}`}>
+              <Upload className="h-4 w-4 mr-1" />
+              Bulk
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* <Input

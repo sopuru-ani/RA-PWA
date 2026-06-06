@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -27,10 +28,13 @@ interface NavItemProps {
 }
 
 import { apiFetch, clearAuthToken } from "@/lib/api-client";
+import ProgramNavBadge from "@/components/programs/ProgramNavBadge";
+import { useResidents } from "@/context/RAResidentProvider";
 
 function RAMore({ label, icon: Icon, className }: NavItemProps) {
   const { setTheme } = useTheme();
   const router = useRouter();
+  const { programStats } = useResidents();
 
   async function handleLogout() {
     try {
@@ -54,10 +58,19 @@ function RAMore({ label, icon: Icon, className }: NavItemProps) {
         <DropdownMenuContent className="w-56 mx-2" align="start">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuGroup>
-            <DropdownMenuItem>Programs</DropdownMenuItem>
-            <DropdownMenuItem>Create a Program</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/ra/dashboard/programs" className="flex items-center w-full">
+                Programs
+                <ProgramNavBadge stats={programStats} />
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/ra/dashboard/programs/new">Create a program</Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
-          <DropdownMenuItem>Calendar</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/ra/calendar">Calendar</Link>
+          </DropdownMenuItem>
           <DropdownMenuGroup>
             <DropdownMenuItem>Profile(subject to change)</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>

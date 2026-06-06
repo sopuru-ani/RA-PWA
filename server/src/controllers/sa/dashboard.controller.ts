@@ -8,6 +8,7 @@ import {
   getCommunityOverviewStats,
 } from "../../services/housing/community.service.js";
 import { Incident } from "../../lib/models.js";
+import { getProgramStats } from "../../services/programs/program.service.js";
 
 export async function getDashboard(
   req: AuthenticatedRequest,
@@ -17,15 +18,17 @@ export async function getDashboard(
   const dbUser = req.dbUser!;
   const community = requirePrimaryCommunity(dbUser);
 
-  const [detail, stats, myIncidents, myOpenIncidents] = await Promise.all([
-    getCommunityDetail(community),
-    getCommunityOverviewStats(community),
-    Incident.countDocuments(buildIncidentListFilter(dbUser)),
-    Incident.countDocuments({
-      ...buildIncidentListFilter(dbUser),
-      $or: [{ resolved: false }, { resolved: { $exists: false } }],
-    }),
-  ]);
+  const [detail, stats, myIncidents, myOpenIncidents, programStats] =
+    await Promise.all([
+      getCommunityDetail(community),
+      getCommunityOverviewStats(community),
+      Incident.countDocuments(buildIncidentListFilter(dbUser)),
+      Incident.countDocuments({
+        ...buildIncidentListFilter(dbUser),
+        $or: [{ resolved: false }, { resolved: { $exists: false } }],
+      }),
+      getProgramStats(dbUser),
+    ]);
 
   if (!detail) {
     res.status(404).json({ msg: "Community not found" });
@@ -49,6 +52,7 @@ export async function getDashboard(
       communityOpenIncidents: stats.openIncidents,
       myIncidents,
       myOpenIncidents,
+      programStats,
     },
   });
 }

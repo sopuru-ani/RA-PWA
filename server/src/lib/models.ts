@@ -20,6 +20,10 @@ import communityStaffModule, {
 import residentChangeRequestModule, {
   type IResidentChangeRequest,
 } from "../../db/residentChangeRequest.model.js";
+import programModule, { type IProgram } from "../../db/program.model.js";
+import programInviteModule, {
+  type IProgramInvite,
+} from "../../db/programInvite.model.js";
 
 function resolveModel<T extends Document>(mod: unknown): Model<T> {
   const candidate = mod as { default?: Model<T> };
@@ -38,9 +42,11 @@ export const CommunityStaff =
   resolveModel<ICommunityStaff>(communityStaffModule);
 export const ResidentChangeRequest =
   resolveModel<IResidentChangeRequest>(residentChangeRequestModule);
+export const Program = resolveModel<IProgram>(programModule);
+export const ProgramInvite = resolveModel<IProgramInvite>(programInviteModule);
 
 export type { IUser, IAuthorized, IRoom, IIncident, ICommunityStaff };
-export type { IResidentChangeRequest };
+export type { IResidentChangeRequest, IProgram, IProgramInvite };
 export type { RoomLean, RoomWithVacancy } from "../../db/room.model.js";
 export type { CommunityLean } from "../../db/community.models.js";
 export type { IncidentLean } from "../../db/incident.model.js";
@@ -49,3 +55,5 @@ export type { ResidentWithStaff, StaffEmails } from "../../db/residentStaff.js";
 export type { RoomcheckLean } from "../../db/roomcheck.model.js";
 export type { SectionStaffLean } from "../../db/sectionStaff.model.js";
 export type { CommunityStaffLean } from "../../db/communityStaff.model.js";
+export type { ProgramLean } from "../../db/program.model.js";
+export type { ProgramInviteLean } from "../../db/programInvite.model.js";

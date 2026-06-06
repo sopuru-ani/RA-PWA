@@ -1,3 +1,5 @@
+import type { ProgramStats } from "@/types/programs";
+
 export type GAUser = {
   firstName: string;
   lastName: string;
@@ -25,6 +27,7 @@ export type GADashboardStats = {
   pendingRequests: number;
   openIncidents: number;
   myPendingRequests: number;
+  programStats?: ProgramStats;
 };
 
 export type ResidentChangeRequestType = "add" | "update" | "remove";

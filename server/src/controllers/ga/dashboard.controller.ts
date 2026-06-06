@@ -4,6 +4,7 @@ import type { AuthenticatedRequest } from "../../middleware/auth.js";
 import { requirePrimaryCommunity } from "../../lib/community-scope.js";
 import { getCommunityDetail, getCommunityOverviewStats } from "../../services/housing/community.service.js";
 import { ResidentChangeRequest } from "../../lib/models.js";
+import { getProgramStats } from "../../services/programs/program.service.js";
 
 export async function getDashboard(
   req: AuthenticatedRequest,
@@ -13,13 +14,14 @@ export async function getDashboard(
   const dbUser = req.dbUser!;
   const community = requirePrimaryCommunity(dbUser);
 
-  const [detail, stats, myPending] = await Promise.all([
+  const [detail, stats, myPending, programStats] = await Promise.all([
     getCommunityDetail(community),
     getCommunityOverviewStats(community),
     ResidentChangeRequest.countDocuments({
       submittedBy: dbUser._id,
       status: "pending",
     }),
+    getProgramStats(dbUser),
   ]);
 
   if (!detail) {
@@ -39,6 +41,7 @@ export async function getDashboard(
     stats: {
       ...stats,
       myPendingRequests: myPending,
+      programStats,
     },
   });
 }

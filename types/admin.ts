@@ -1,3 +1,5 @@
+import type { ProgramStats } from "@/types/programs";
+
 export type AdminUser = {
   firstName: string;
   lastName: string;
@@ -17,6 +19,7 @@ export type AdminDashboardStats = {
     SA: number;
     Admin: number;
   };
+  programStats?: ProgramStats;
 };
 
 export type StaffListItem = {

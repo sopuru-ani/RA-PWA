@@ -16,6 +16,7 @@ import { IncidentLean } from "@/db/incident.model";
 import { RoomcheckLean, InspectionSession } from "@/db/roomcheck.model";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import { apiFetch } from "@/lib/api-client";
+import type { ProgramStats } from "@/types/programs";
 function layout({ children }: { children: ReactNode }) {
   const router = useRouter();
   // then in your component
@@ -39,6 +40,7 @@ function layout({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [programStats, setProgramStats] = useState<ProgramStats | undefined>();
 
   useEffect(() => {
     let isMounted = true;
@@ -56,6 +58,7 @@ function layout({ children }: { children: ReactNode }) {
           incidents: IncidentLean[];
           roomsChecked: RoomcheckLean;
           walkthroughs: InspectionSession[];
+          programStats?: ProgramStats;
         } = await response.json();
 
         if (response.status === 401) {
@@ -78,6 +81,7 @@ function layout({ children }: { children: ReactNode }) {
           );
 
           setVacancy(vacancies);
+          setProgramStats(result.programStats);
         }
       } catch (error) {
         console.error("Failed to fetch residents:", error);
@@ -106,6 +110,7 @@ function layout({ children }: { children: ReactNode }) {
           roomChecked,
           sessionId,
           walkthroughs,
+          programStats,
         }}
       >
         <div className="flex flex-col h-dvh">

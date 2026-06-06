@@ -9,6 +9,7 @@ import {
   SectionStaff,
   ResidentChangeRequest,
 } from "../../lib/models.js";
+import { getProgramStats } from "../../services/programs/program.service.js";
 
 export async function getDashboard(
   req: AuthenticatedRequest,
@@ -26,6 +27,7 @@ export async function getDashboard(
       pendingInvites,
       sectionCount,
       pendingResidentRequests,
+      programStats,
     ] = await Promise.all([
       Community.countDocuments(),
       Resident.countDocuments(),
@@ -41,6 +43,7 @@ export async function getDashboard(
       }),
       SectionStaff.countDocuments(),
       ResidentChangeRequest.countDocuments({ status: "pending" }),
+      getProgramStats(dbUser),
     ]);
 
     const roleCounts = Object.fromEntries(
@@ -67,6 +70,7 @@ export async function getDashboard(
           SA: roleCounts.SA ?? 0,
           Admin: roleCounts.Admin ?? 0,
         },
+        programStats,
       },
     });
   } catch (error) {

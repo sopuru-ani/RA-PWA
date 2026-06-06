@@ -1,3 +1,5 @@
+import type { ProgramStats } from "@/types/programs";
+
 export type SAUser = {
   firstName: string;
   lastName: string;
@@ -25,4 +27,5 @@ export type SADashboardStats = {
   communityOpenIncidents: number;
   myIncidents: number;
   myOpenIncidents: number;
+  programStats?: ProgramStats;
 };

@@ -5,6 +5,7 @@ import { GraduationCap, AlertTriangle, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSASession } from "@/context/SASessionContext";
+import ProgramOverviewSection from "@/components/programs/ProgramOverviewSection";
 
 const quickLinks = [
   {
@@ -33,6 +34,11 @@ export default function SADashboardPage() {
           {community.residentCount} residents
         </p>
       </div>
+
+      <ProgramOverviewSection
+        role="SA"
+        stats={stats.programStats}
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <Card>

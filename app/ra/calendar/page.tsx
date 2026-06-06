@@ -1,14 +1,13 @@
 "use client";
-import Calendar from "@/components/Calendar";
 
-function Page() {
+import ProgramsCalendarPage from "@/components/programs/ProgramsCalendarPage";
+
+export default function RACalendarPage() {
   return (
-    <>
-      <div className="p-3">
-        <Calendar />
-      </div>
-    </>
+    <ProgramsCalendarPage
+      detailPath={(id) => `/ra/dashboard/programs/${id}`}
+      programsHref="/ra/dashboard/programs"
+      standalone
+    />
   );
 }
-
-export default Page;

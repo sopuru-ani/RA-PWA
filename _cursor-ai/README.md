@@ -14,6 +14,8 @@ This folder holds documentation written during Cursor agent sessions so work sur
 | [admin-workflow-implementation.md](./admin-workflow-implementation.md) | Admin role plan + full implementation: API, UI shell, staff CRUD/deactivate, community pickers, AD display labels | — |
 | [ga-ad-and-admin-structure.md](./ga-ad-and-admin-structure.md) | GA/AD full workflow, resident approval queue, admin community/section/room CRUD, GA incidents & search fixes | — |
 | [admin-residents-add-bulk.md](./admin-residents-add-bulk.md) | Admin residents list Add/Bulk buttons, single-create API, add/bulk sub-pages, legacy bulk URL redirect | — |
+| [programs-calendar-implementation.md](./programs-calendar-implementation.md) | Programs + calendar Sprints 1–4: API, permissions, UI, attendance, reminders — Domus-complete without Outlook | — |
+| [sprint-5-microsoft-graph-outlook.md](./sprint-5-microsoft-graph-outlook.md) | Sprint 5 plan: Microsoft Graph Mode A, Azure/IT checklist, hooks, testing — for future Outlook integration | — |
 
 ## How to use these docs
 

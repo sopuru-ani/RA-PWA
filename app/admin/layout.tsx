@@ -71,7 +71,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-col h-dvh">
         <AdminHeader />
         <Separator />
-        <div className="px-2 py-2 flex-1 overflow-y-auto">{children}</div>
+        <div className="relative min-h-0 flex-1 overflow-y-auto px-2 py-2">
+          {children}
+        </div>
         <AdminNav />
       </div>
     </AdminSessionProvider>

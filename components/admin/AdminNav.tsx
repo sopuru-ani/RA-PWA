@@ -29,10 +29,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import ProgramNavBadge from "@/components/programs/ProgramNavBadge";
+import { useAdminSession } from "@/context/AdminSessionContext";
 
 function AdminMore() {
   const router = useRouter();
   const { setTheme } = useTheme();
+  const { stats } = useAdminSession();
   async function logout() {
     try {
       await apiFetch("api/auth/logout", { method: "POST" });
@@ -53,6 +56,15 @@ function AdminMore() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 mx-2" align="start">
         <DropdownMenuLabel>Admin</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Link href="/admin/programs" className="flex items-center w-full">
+            Programs
+            <ProgramNavBadge stats={stats.programStats} />
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/admin/calendar">Calendar</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/admin/resident-requests">Resident requests</Link>
         </DropdownMenuItem>

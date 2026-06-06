@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGASession } from "@/context/GASessionContext";
+import ProgramOverviewSection from "@/components/programs/ProgramOverviewSection";
 const quickLinks = [
   {
     href: "/ga/dashboard/staff",
@@ -53,6 +54,11 @@ export default function GADashboardPage() {
           {community.residentCount} residents
         </p>
       </div>
+
+      <ProgramOverviewSection
+        role="GA"
+        stats={stats.programStats}
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <Card>

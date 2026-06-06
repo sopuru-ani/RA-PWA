@@ -6,6 +6,7 @@ import { UserType } from "@/db/user.model";
 import { CommunityLean } from "@/db/community.models";
 import { IncidentLean } from "@/db/incident.model";
 import { RoomcheckLean, InspectionSession } from "@/db/roomcheck.model";
+import type { ProgramStats } from "@/types/programs";
 
 interface ResidentsContextType {
   residents: ResidentLean[];
@@ -17,6 +18,7 @@ interface ResidentsContextType {
   roomChecked: RoomcheckLean[];
   walkthroughs: InspectionSession[];
   sessionId: string | null;
+  programStats?: ProgramStats;
 }
 
 export const ResidentsContext = createContext<ResidentsContextType | null>(

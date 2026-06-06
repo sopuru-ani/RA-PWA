@@ -14,6 +14,7 @@ import {
   type RoomcheckLean,
 } from "../lib/models.js";
 import { attachVacancyToRooms } from "../../db/roomVacancy.js";
+import { getProgramStats } from "../services/programs/program.service.js";
 
 export async function getDashboard(
   req: AuthenticatedRequest,
@@ -50,7 +51,8 @@ export async function getDashboard(
       section: dbUser.assignment[0],
     }).lean<RoomcheckLean>();
 
-    const walkthroughs = await Roomcheck.aggregate([
+    const [walkthroughs, programStats] = await Promise.all([
+      Roomcheck.aggregate([
       {
         $match: {
           sessionStatus: "completed",
@@ -83,6 +85,8 @@ export async function getDashboard(
         },
       },
       { $sort: { inspectionDate: -1 } },
+    ]),
+      getProgramStats(dbUser),
     ]);
 
     res.status(200).json({
@@ -94,6 +98,7 @@ export async function getDashboard(
       incidents,
       roomsChecked,
       walkthroughs,
+      programStats,
     });
   } catch (error) {
     res.status(500).json({

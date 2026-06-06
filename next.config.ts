@@ -6,7 +6,7 @@ import path from "path";
 
 const nextConfig: any = {
   reactStrictMode: true,
-  // transpilePackages: ['tony-calendar'],
+  transpilePackages: ["tony-calendar"],
   turbopack: {
     root: path.join(__dirname, ".."),
   },

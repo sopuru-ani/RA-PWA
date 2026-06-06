@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import type { LucideIcon } from "lucide-react";
+import ProgramNavBadge from "@/components/programs/ProgramNavBadge";
+import { useGASession } from "@/context/GASessionContext";
 
 type Props = {
   label: string;
@@ -28,6 +30,7 @@ type Props = {
 function GAMore({ label, icon: Icon }: Props) {
   const router = useRouter();
   const { setTheme } = useTheme();
+  const { stats } = useGASession();
 
   async function logout() {
     try {
@@ -49,6 +52,15 @@ function GAMore({ label, icon: Icon }: Props) {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 mx-2" align="start">
         <DropdownMenuLabel>Area Director</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Link href="/ga/dashboard/programs" className="flex items-center w-full">
+            Programs
+            <ProgramNavBadge stats={stats.programStats} />
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/ga/calendar">Calendar</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/ga/dashboard/residents/add">Add resident</Link>
         </DropdownMenuItem>

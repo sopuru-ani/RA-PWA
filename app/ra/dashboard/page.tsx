@@ -13,10 +13,19 @@ import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
 
 import { apiFetch } from "@/lib/api-client";
+import ProgramAlertBanner from "@/components/programs/ProgramAlertBanner";
+import type { ProgramStats } from "@/types/programs";
 
 function page() {
-  const { residents, user }: { residents: ResidentLean[]; user: UserType } =
-    useResidents();
+  const {
+    residents,
+    user,
+    programStats,
+  }: {
+    residents: ResidentLean[];
+    user: UserType;
+    programStats?: ProgramStats;
+  } = useResidents();
 
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -82,6 +91,11 @@ function page() {
 
   return (
     <>
+      <ProgramAlertBanner
+        stats={programStats}
+        programsHref="/ra/dashboard/programs"
+        calendarHref="/ra/calendar"
+      />
       <div className="flex flex-col h-full">
         <div className="mx-3">
           <ButtonsAndSearchBar

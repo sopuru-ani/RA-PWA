@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAdminSession } from "@/context/AdminSessionContext";
 import { roleStatLine } from "@/lib/role-labels";
+import ProgramOverviewSection from "@/components/programs/ProgramOverviewSection";
 
 const quickLinks = [
   {
@@ -51,6 +52,11 @@ export default function AdminDashboardPage() {
           Housing operations at a glance
         </p>
       </div>
+
+      <ProgramOverviewSection
+        role="Admin"
+        stats={stats.programStats}
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <Card>

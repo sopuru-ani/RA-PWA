@@ -1,0 +1,16 @@
+/* Map tony-calendar tokens to Domus maroon brand */
+.domus-tony-calendar {
+  --tony-accent: var(--color-maroon, #6b0f1a);
+  --tony-accent-soft: color-mix(in oklch, var(--color-maroon, #6b0f1a) 12%, transparent);
+  --tony-selected-bg: var(--color-maroon, #6b0f1a);
+  --tony-event-bg: color-mix(in oklch, var(--color-maroon, #6b0f1a) 14%, transparent);
+  --tony-event-text: var(--color-maroon, #6b0f1a);
+  --tony-badge-bg: var(--color-maroon, #6b0f1a);
+}
+
+.dark .domus-tony-calendar {
+  --tony-accent: var(--color-maroon-hover, #8a1624);
+  --tony-selected-bg: var(--color-maroon-hover, #8a1624);
+  --tony-event-text: #e8a0a8;
+  --tony-badge-bg: var(--color-maroon-hover, #8a1624);
+}

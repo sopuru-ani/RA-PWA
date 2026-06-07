@@ -188,7 +188,7 @@ export default function ProgramsListView({
       ) : programs.length === 0 ? (
         <p className="text-sm text-muted-foreground">No programs yet.</p>
       ) : (
-        <div className="space-y-2">
+        <div className="flex flex-col space-y-2">
           {programs.map((program) => (
             <ProgramCard
               key={program._id}

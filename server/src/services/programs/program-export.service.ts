@@ -1,6 +1,6 @@
 import type { HydratedDocument } from "mongoose";
 import type { IUser } from "../../../db/user.model.js";
-import { canAccessMonitoring } from "../../lib/program-permissions.js";
+import { canExportAttendance } from "../../lib/program-permissions.js";
 import { scopeError } from "../../lib/community-scope.js";
 import { Program } from "../../lib/models.js";
 import { listProgramAttendance } from "./program.service.js";
@@ -21,9 +21,7 @@ export async function exportAttendanceCsv(
     throw scopeError("Program not found", 404);
   }
 
-  if (!canAccessMonitoring(user, program)) {
-    throw scopeError("You cannot export attendance for this program", 403);
-  }
+  canExportAttendance(user, program);
 
   const rows = await listProgramAttendance(user, programId);
 

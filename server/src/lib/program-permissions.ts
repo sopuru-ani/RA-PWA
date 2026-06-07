@@ -185,17 +185,70 @@ export function buildMonitoringFilter(
   return { _id: null };
 }
 
-export function canMarkAttendance(
+export function isProgramCreator(
   user: HydratedDocument<IUser>,
-  program: Pick<IProgram, "createdByRole" | "communities" | "status">,
+  program: Pick<IProgram, "createdBy">,
+): boolean {
+  return String(program.createdBy) === String(user._id);
+}
+
+export function canManageAttachments(
+  user: HydratedDocument<IUser>,
+  program: Pick<IProgram, "createdBy" | "status">,
+): void {
+  if (program.status === "cancelled") {
+    throw scopeError("Cannot modify attachments on a cancelled program", 400);
+  }
+
+  if (isAdmin(user) || isProgramCreator(user, program)) {
+    return;
+  }
+
+  throw scopeError("You cannot manage attachments for this program", 403);
+}
+
+export function canViewAttendance(
+  user: HydratedDocument<IUser>,
+  program: Pick<
+    IProgram,
+    "createdBy" | "createdByRole" | "communities" | "status"
+  >,
 ): void {
   if (program.status !== "published") {
     throw scopeError("Attendance is only available for published programs", 400);
   }
 
-  if (!canAccessMonitoring(user, program)) {
-    throw scopeError("You cannot manage attendance for this program", 403);
+  if (isAdmin(user) || isProgramCreator(user, program)) {
+    return;
   }
+
+  if (canAccessMonitoring(user, program)) {
+    return;
+  }
+
+  throw scopeError("You cannot view attendance for this program", 403);
+}
+
+export function canMarkAttendance(
+  user: HydratedDocument<IUser>,
+  program: Pick<IProgram, "createdBy" | "status">,
+): void {
+  if (program.status !== "published") {
+    throw scopeError("Attendance is only available for published programs", 400);
+  }
+
+  if (isAdmin(user) || isProgramCreator(user, program)) {
+    return;
+  }
+
+  throw scopeError("You cannot manage attendance for this program", 403);
+}
+
+export function canExportAttendance(
+  user: HydratedDocument<IUser>,
+  program: Pick<IProgram, "createdBy" | "status">,
+): void {
+  canMarkAttendance(user, program);
 }
 
 function programInAdCommunities(

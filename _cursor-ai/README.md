@@ -16,6 +16,7 @@ This folder holds documentation written during Cursor agent sessions so work sur
 | [admin-residents-add-bulk.md](./admin-residents-add-bulk.md) | Admin residents list Add/Bulk buttons, single-create API, add/bulk sub-pages, legacy bulk URL redirect | — |
 | [programs-calendar-implementation.md](./programs-calendar-implementation.md) | Programs + calendar Sprints 1–4: API, permissions, UI, attendance, reminders — Domus-complete without Outlook | — |
 | [programs-audience-staff-ui-session.md](./programs-audience-staff-ui-session.md) | Audience picker fixes, staff DB reconciliation, open invitations (any role/community), program form UI polish | [Programs audience & staff UI](68ca658c-7fda-4937-91f3-e05357467d76) |
+| [programs-attendance-attachments-permissions.md](./programs-attendance-attachments-permissions.md) | Attendance view/edit split (creator + admin mark; GA view-only), CSV export scope, post-publish link attachments for invitees | — |
 | [sprint-5-microsoft-graph-outlook.md](./sprint-5-microsoft-graph-outlook.md) | Sprint 5 plan: Microsoft Graph Mode A, Azure/IT checklist, hooks, testing — for future Outlook integration | — |
 
 ## How to use these docs

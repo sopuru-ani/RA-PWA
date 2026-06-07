@@ -38,9 +38,15 @@ const ATTENDANCE_LABELS: Record<AttendanceStatus, string> = {
 
 type Props = {
   programId: string;
+  readOnly?: boolean;
+  canExport?: boolean;
 };
 
-export default function ProgramAttendanceTable({ programId }: Props) {
+export default function ProgramAttendanceTable({
+  programId,
+  readOnly = false,
+  canExport = true,
+}: Props) {
   const { show } = useNotification();
   const [rows, setRows] = useState<AttendanceRow[]>([]);
   const [draft, setDraft] = useState<Record<string, AttendanceStatus>>({});
@@ -137,45 +143,55 @@ export default function ProgramAttendanceTable({ programId }: Props) {
             {attendedCount} of {rows.length} marked attended
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => markAll("attended")}
-          >
-            Mark all attended
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            disabled={saving}
-            onClick={async () => {
-              try {
-                await downloadAttendanceCsv(programId);
-                show({ msg: "CSV downloaded", type: "success", duration: 2000 });
-              } catch (err) {
-                show({
-                  msg:
-                    err instanceof Error ? err.message : "Export failed",
-                  type: "error",
-                  closable: true,
-                  duration: null,
-                });
-              }
-            }}
-          >
-            Export CSV
-          </Button>
-        </div>
+        {!readOnly || canExport ? (
+          <div className="flex flex-wrap gap-2">
+            {!readOnly && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => markAll("attended")}
+              >
+                Mark all attended
+              </Button>
+            )}
+            {canExport && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={saving}
+                onClick={async () => {
+                  try {
+                    await downloadAttendanceCsv(programId);
+                    show({
+                      msg: "CSV downloaded",
+                      type: "success",
+                      duration: 2000,
+                    });
+                  } catch (err) {
+                    show({
+                      msg:
+                        err instanceof Error ? err.message : "Export failed",
+                      type: "error",
+                      closable: true,
+                      duration: null,
+                    });
+                  }
+                }}
+              >
+                Export CSV
+              </Button>
+            )}
+          </div>
+        ) : null}
       </div>
 
-      <div className="space-y-2">
+      <div className="flex flex-col space-y-2">
         {rows.map((row) => (
           <div
             key={row._id}
-            className="flex flex-col sm:flex-row sm:items-center gap-2 rounded-lg border p-3"
+            className="flex flex-col sm:flex-row sm:items-center gap-2 py-4 border-b"
           >
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">
@@ -195,28 +211,34 @@ export default function ProgramAttendanceTable({ programId }: Props) {
                 </Badge>
               </div>
             </div>
-            <Select
-              value={draft[row.userId] ?? row.attendanceStatus}
-              onValueChange={(v) =>
-                setStatus(row.userId, v as AttendanceStatus)
-              }
-            >
-              <SelectTrigger className="w-full sm:w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ATTENDANCE_OPTIONS.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {ATTENDANCE_LABELS[s]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {readOnly ? (
+              <Badge variant="outline" className="w-fit shrink-0">
+                {ATTENDANCE_LABELS[row.attendanceStatus]}
+              </Badge>
+            ) : (
+              <Select
+                value={draft[row.userId] ?? row.attendanceStatus}
+                onValueChange={(v) =>
+                  setStatus(row.userId, v as AttendanceStatus)
+                }
+              >
+                <SelectTrigger className="w-full sm:w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ATTENDANCE_OPTIONS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {ATTENDANCE_LABELS[s]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         ))}
       </div>
 
-      {changed && (
+      {!readOnly && changed && (
         <Button
           type="button"
           className="w-full text-white"

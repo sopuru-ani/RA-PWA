@@ -2,6 +2,8 @@
 
 Documentation of the Programs feature built across Sprints 1–4 and the calendar UI fix. Domus-native workflow is complete; Outlook sync is deferred to Sprint 5 (see `sprint-5-microsoft-graph-outlook.md`).
 
+**Attendance, CSV export, and attachment permissions** were refined in a later session — see [programs-attendance-attachments-permissions.md](./programs-attendance-attachments-permissions.md).
+
 ---
 
 ## What works today (no Microsoft / Outlook required)
@@ -9,12 +11,12 @@ Documentation of the Programs feature built across Sprints 1–4 and the calenda
 - All roles (Admin, AD/GA, RA, SA) can **create** programs, including department-wide
 - **Draft → submit → admin approve → publish** (non-admin programs need admin approval)
 - Admin can **publish directly** without approval
-- **Invites**, **RSVP**, **attendance** (Admin/AD monitoring scope)
+- **Invites**, **RSVP**, **attendance** (admin + creator mark; AD/GA view-only — see [attendance doc](./programs-attendance-attachments-permissions.md))
 - **tony-calendar** UI with mobile sheet + desktop 30% events sidebar
 - Dashboard **program stats** and **notification badges** on More menus
 - **Conflict warnings** on create/edit forms
-- **CSV attendance export** (Admin/AD)
-- **Optional link attachments** on draft/rejected programs
+- **CSV attendance export** (admin + creator)
+- **Optional labeled link attachments** (admin/creator; invitees read-only; post-publish supported)
 - **24h email reminders** (Admin trigger; logs to console without SendGrid; optional `SENDGRID_API_KEY` + `SENDGRID_FROM`)
 
 ---
@@ -81,7 +83,7 @@ published → cancelled
 
 ### Permissions — `server/src/lib/program-permissions.ts`
 
-Creation, monitoring filters, edit/cancel rules, attendance scope.
+Creation, monitoring filters, edit/cancel rules, attendance/attachment scope (see [attendance doc](./programs-attendance-attachments-permissions.md)).
 
 ### API — `/api/programs`
 
@@ -103,10 +105,11 @@ Creation, monitoring filters, edit/cancel rules, attendance scope.
 | `POST` | `/:id/reject` | Admin reject |
 | `POST` | `/:id/cancel` | Cancel |
 | `PATCH` | `/:id/rsvp` | RSVP |
-| `GET/PATCH` | `/:id/attendance` | Roster / mark attendance |
-| `GET` | `/:id/attendance/export` | CSV download |
-| `POST` | `/:id/attachments` | Add link attachment |
-| `DELETE` | `/:id/attachments/:attachmentId` | Remove attachment |
+| `GET` | `/:id/attendance` | Roster (admin, creator, GA view) |
+| `PATCH` | `/:id/attendance` | Mark attendance (admin, creator) |
+| `GET` | `/:id/attendance/export` | CSV (admin, creator) |
+| `POST` | `/:id/attachments` | Add labeled link (admin, creator) |
+| `DELETE` | `/:id/attachments/:attachmentId` | Remove link (admin, creator) |
 
 Mounted in `server/src/routes/programs.routes.ts`.
 
@@ -136,7 +139,7 @@ Mounted in `server/src/routes/programs.routes.ts`.
 | `ProgramForm` | Create/edit with conflict alert |
 | `ProgramDetailView` | RSVP, approve/reject, attendance, attachments |
 | `ProgramsListView` / `ProgramsListPage` | List with mine / oversight / pending tabs |
-| `ProgramAttendanceTable` | Mark attendance + CSV export |
+| `ProgramAttendanceTable` | Attendance roster; edit + CSV for admin/creator; read-only for GA |
 | `ProgramOverviewSection` | Dashboard stat cards |
 | `ProgramAlertBanner` | RA residents page alerts |
 | `ProgramNavBadge` | More menu notification count |
@@ -214,6 +217,6 @@ SendGrid via `fetch` when env set; otherwise console log (dev-friendly).
 
 1. RA creates draft → submit → Admin approves → invites exist
 2. RSVP on published program
-3. AD marks attendance on RA-created program
+3. Creator marks attendance on own program; AD views roster read-only on RA-created program (see [attendance doc](./programs-attendance-attachments-permissions.md))
 4. Calendar loads on mobile (tap day → sheet) and desktop (sidebar)
 5. Admin → Programs → Send 24h reminders (check server logs without SendGrid)

@@ -20,13 +20,14 @@ import {
 } from "./audience-resolver.service.js";
 import {
   buildMonitoringFilter,
-  canAccessMonitoring,
   canApproveOrReject,
   canCancelProgram,
   canEditProgram,
+  canManageAttachments,
   canMarkAttendance,
   canPublishAsAdmin,
   canSubmitForApproval,
+  canViewAttendance,
   canViewProgramDetail,
   creatorRoleFromUser,
   isAdmin,
@@ -556,9 +557,7 @@ export async function listProgramAttendance(
     throw scopeError("Program not found", 404);
   }
 
-  if (!canAccessMonitoring(user, program)) {
-    throw scopeError("You cannot view attendance for this program", 403);
-  }
+  canViewAttendance(user, program);
 
   const invites = await ProgramInvite.find({ programId }).lean<ProgramInviteLean[]>();
   const userIds = invites.map((i) => i.userId);
@@ -674,7 +673,7 @@ export async function addProgramAttachment(
     throw scopeError("Program not found", 404);
   }
 
-  canEditProgram(user, program);
+  canManageAttachments(user, program);
 
   if (!input.filename?.trim() || !input.bucket?.trim()) {
     throw scopeError("filename and bucket (URL or key) are required", 400);
@@ -704,7 +703,7 @@ export async function removeProgramAttachment(
     throw scopeError("Program not found", 404);
   }
 
-  canEditProgram(user, program);
+  canManageAttachments(user, program);
 
   const before = program.attachments.length;
   program.attachments = program.attachments.filter(

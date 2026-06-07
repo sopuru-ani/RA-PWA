@@ -80,10 +80,17 @@ export default function ProgramDetailView({
   const isCreator =
     userId && program && String(program.createdBy) === String(userId);
   const isAdmin = userRole === "Admin";
-  const canManageAttendance =
+  const isGa = userRole === "GA";
+  const canViewAttendance =
     program &&
     program.status === "published" &&
-    (isAdmin || userRole === "GA");
+    (isAdmin || isCreator || isGa);
+  const canMarkAttendance =
+    program && program.status === "published" && (isAdmin || isCreator);
+  const canManageAttachments =
+    program &&
+    program.status !== "cancelled" &&
+    (isAdmin || isCreator);
 
   async function runAction(
     label: string,
@@ -209,15 +216,10 @@ export default function ProgramDetailView({
 
       <p className="text-sm leading-relaxed">{program.description}</p>
 
-      {(program.attachments?.length ?? 0) > 0 ||
-      (isCreator &&
-        (program.status === "draft" || program.status === "rejected")) ? (
+      {((program.attachments?.length ?? 0) > 0 || canManageAttachments) ? (
         <ProgramAttachmentsEditor
           program={program}
-          editable={
-            Boolean(isCreator) &&
-            (program.status === "draft" || program.status === "rejected")
-          }
+          editable={Boolean(canManageAttachments)}
           onUpdate={(updated) => setProgram(updated)}
         />
       ) : null}
@@ -233,13 +235,17 @@ export default function ProgramDetailView({
         </div>
       )}
 
-      {canManageAttendance && (
+      {canViewAttendance && (
         <div className="pt-2 border-t">
-          <ProgramAttendanceTable programId={programId} />
+          <ProgramAttendanceTable
+            programId={programId}
+            readOnly={!canMarkAttendance}
+            canExport={Boolean(canMarkAttendance)}
+          />
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 pt-2 border-t">
+      <div className="flex flex-wrap gap-2 pt-2">
         {editHref &&
           (program.status === "draft" || program.status === "rejected") &&
           isCreator && (

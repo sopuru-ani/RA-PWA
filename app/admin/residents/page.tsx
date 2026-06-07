@@ -10,6 +10,7 @@ import ResidentListItem from "@/components/housing/ResidentListItem";
 import { apiFetch } from "@/lib/api-client";
 import type { ResidentWithStaff } from "@/types/admin";
 import Empty from "@/components/RA/Empty";
+import ListSkeleton from "@/components/housing/ListSkeleton";
 import { Search, UserPlus, Upload, X } from "lucide-react";
 
 function ResidentsPageContent() {
@@ -103,16 +104,18 @@ function ResidentsPageContent() {
         </InputGroupAddon>
         {q && (
           <button
+            type="button"
             onClick={() => setQ("")}
-            className="rounded-full hover:bg-gray-200 p-1 absolute right-2 top-1/2 -translate-y-1/2"
+            aria-label="Clear search"
+            className="rounded-full p-1 absolute right-2 top-1/2 -translate-y-1/2 hover:bg-muted"
           >
-            <X className="w-4 h-4 text-gray-600" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         )}
       </InputGroup>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <ListSkeleton rows={6} />
       ) : items.length === 0 ? (
         <Empty message="No residents found" />
       ) : (
@@ -141,7 +144,7 @@ function ResidentsPageContent() {
 
 export default function AdminResidentsPage() {
   return (
-    <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+    <Suspense fallback={<ListSkeleton rows={6} />}>
       <ResidentsPageContent />
     </Suspense>
   );

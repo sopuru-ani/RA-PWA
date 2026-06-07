@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ListSkeleton from "@/components/housing/ListSkeleton";
+import EntityNotFound from "@/components/housing/EntityNotFound";
 import ResidentProfileForm, {
   residentToFormValues,
 } from "@/components/housing/ResidentProfileForm";
@@ -86,7 +87,13 @@ export default function AdminResidentDetailPage() {
 
   if (loading) return <ListSkeleton rows={3} />;
   if (!resident) {
-    return <p className="text-sm text-muted-foreground">Resident not found.</p>;
+    return (
+      <EntityNotFound
+        message="Resident not found"
+        backHref="/admin/residents"
+        backLabel="All residents"
+      />
+    );
   }
 
   return (
@@ -162,7 +169,7 @@ export default function AdminResidentDetailPage() {
                   description="Apply these updates immediately. Placement cannot be changed here."
                   confirmLabel="Save"
                   onConfirm={() => saveEdit(pendingSave)}
-                  trigger={<Button className="flex-1">Confirm save</Button>}
+                  trigger={<Button className="flex-1 text-white">Confirm save</Button>}
                 />
               ) : null}
             </div>

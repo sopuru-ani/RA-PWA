@@ -102,7 +102,7 @@ export default function SADashboardPage() {
         </div>
       ) : null}
 
-      <Button asChild className="w-full">
+      <Button asChild className="w-full text-white">
         <Link href="/sa/dashboard/incidents">Report an incident</Link>
       </Button>
     </div>

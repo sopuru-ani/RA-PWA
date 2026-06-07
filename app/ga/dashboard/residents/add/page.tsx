@@ -170,7 +170,7 @@ export default function GAAddResidentPage() {
           confirmLabel="Submit"
           onConfirm={handleSubmit}
           trigger={
-            <Button type="button" disabled={loading} className="w-full">
+            <Button type="button" disabled={loading} className="w-full text-white">
               {loading ? "Submitting..." : "Submit for approval"}
             </Button>
           }

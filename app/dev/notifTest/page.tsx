@@ -8,7 +8,7 @@ function NotificationsTest() {
   return (
     <div className="relative flex flex-col gap-4 w-dvw min-h-dvh p-4">
       <button
-        className="py-2 px-3 bg-primary rounded-md w-fit"
+        className="py-2 px-3 bg-primary text-white rounded-md w-fit"
         onClick={() => {
           show({
             msg: "first click",
@@ -22,7 +22,7 @@ function NotificationsTest() {
       </button>
 
       <button
-        className="py-2 px-3 bg-primary rounded-md w-fit"
+        className="py-2 px-3 bg-primary text-white rounded-md w-fit"
         onClick={() => {
           show({
             msg: "second click",
@@ -34,7 +34,7 @@ function NotificationsTest() {
       </button>
 
       <button
-        className="py-2 px-3 bg-primary rounded-md w-fit"
+        className="py-2 px-3 bg-primary text-white rounded-md w-fit"
         onClick={() => {
           show({
             msg: "third click",

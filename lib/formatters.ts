@@ -30,3 +30,27 @@ export function formatTime(time?: string) {
     hour12: true
   })
 }
+
+export function formatUserAssignment(
+  assignment?: string[] | string,
+  community?: string[] | string,
+): string {
+  const sections = Array.isArray(assignment)
+    ? assignment.filter(Boolean)
+    : assignment
+      ? [assignment]
+      : [];
+  const communityName = Array.isArray(community)
+    ? community.filter(Boolean)[0]
+    : community;
+
+  if (sections.length === 0 && !communityName) return "";
+  if (sections.length === 0) return communityName ?? "";
+
+  const sectionLabel =
+    sections.length === 1 ? sections[0] : sections.join(", ");
+
+  return communityName
+    ? `${sectionLabel} · ${communityName}`
+    : sectionLabel;
+}

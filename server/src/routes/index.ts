@@ -21,6 +21,8 @@ apiRouter.use("/ra", raRoutes);
 apiRouter.use("/admin", adminRoutes);
 apiRouter.use("/ga", gaRoutes);
 apiRouter.use("/sa", saRoutes);
-apiRouter.use("/dev", devRoutes);
+if (process.env.NODE_ENV !== "production") {
+  apiRouter.use("/dev", devRoutes);
+}
 
 export default apiRouter;

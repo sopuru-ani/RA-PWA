@@ -187,7 +187,7 @@ export default function ResidentMoveForm({
         confirmLabel="Move"
         onConfirm={performMove}
         trigger={
-          <Button className="w-full" disabled={!roomId}>
+          <Button className="w-full text-white" disabled={!roomId}>
             Move resident
           </Button>
         }

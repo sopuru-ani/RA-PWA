@@ -19,6 +19,7 @@ interface ResidentsContextType {
   walkthroughs: InspectionSession[];
   sessionId: string | null;
   programStats?: ProgramStats;
+  refreshIncidents: () => Promise<void>;
 }
 
 export const ResidentsContext = createContext<ResidentsContextType | null>(

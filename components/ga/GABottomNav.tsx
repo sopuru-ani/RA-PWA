@@ -4,18 +4,21 @@ import {
   LayoutDashboard,
   Users,
   GraduationCap,
-  NotebookPen,
-  Notebook,
   AlertTriangle,
   Croissant,
 } from "lucide-react";
 import { NavItem } from "@/components/NavItem";
+import ProgramsNavItem from "@/components/nav/ProgramsNavItem";
 import GAMore from "./GAMore";
+import { bottomNavClassName, bottomNavGridClassName } from "@/lib/bottom-nav";
+import { useGASession } from "@/context/GASessionContext";
 
 function GABottomNav() {
+  const { stats } = useGASession();
+
   return (
-    <nav className="relative border-t bg-background">
-      <div className="flex justify-around">
+    <nav className={bottomNavClassName()}>
+      <div className={bottomNavGridClassName(6)}>
         <NavItem
           label="Overview"
           icon={[LayoutDashboard, LayoutDashboard]}
@@ -34,16 +37,14 @@ function GABottomNav() {
           matchPrefix
         />
         <NavItem
-          label="Inspections"
-          icon={[NotebookPen, Notebook]}
-          href="/ga/dashboard/inspections"
-          matchPrefix
-        />
-        <NavItem
           label="Incidents"
           icon={[AlertTriangle, AlertTriangle]}
           href="/ga/dashboard/incidents"
           matchPrefix
+        />
+        <ProgramsNavItem
+          href="/ga/dashboard/programs"
+          stats={stats.programStats}
         />
         <GAMore label="More" icon={Croissant} />
       </div>

@@ -87,7 +87,7 @@ export default function NewCommunityPage() {
             rows={4}
           />
         </div>
-        <Button type="submit" disabled={loading} className="w-full">
+        <Button type="submit" disabled={loading} className="w-full text-white">
           {loading ? "Creating..." : "Create community"}
         </Button>
       </form>

@@ -1,93 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Plus, ShieldAlert } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import DropDown from "@/components/RA/Incidents/DropDown";
 import CreateIncidentPopUp from "@/components/RA/Incidents/CreateIncidentPopUp";
 import EditIncidentPopUp from "@/components/RA/Incidents/EditIncidentPopUp";
 import DeleteIncidentPopUp from "@/components/RA/Incidents/DeleteIncidentPopUp";
+import IncidentStatusBadge from "@/components/RA/Incidents/IncidentStatusBadge";
+import ReportIncidentStickyBar from "@/components/RA/Incidents/ReportIncidentStickyBar";
 import { useResidents } from "@/context/RAResidentProvider";
-import { IncidentLean } from "@/db/incident.model";
-import { CommunityLean } from "@/db/community.models";
-import { UserType } from "@/db/user.model";
-import { RoomLean } from "@/db/room.model";
-import { Trash2, ShieldAlert } from "lucide-react";
-import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
+import PageHeader from "@/components/housing/PageHeader";
+import { stickyActionBarClearanceClassName } from "@/lib/bottom-nav";
+import { cn } from "@/lib/utils";
 
-import { apiFetch } from "@/lib/api-client";
 function Page() {
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
-
   const {
     community,
     user,
     rooms,
     incidents,
-  }: {
-    community: CommunityLean[];
-    user: UserType;
-    rooms: RoomLean[];
-    incidents: IncidentLean[];
+    refreshIncidents,
   } = useResidents();
 
   const [dropdown, setDropdown] = useState("All");
+  const [createOpen, setCreateOpen] = useState(false);
   const filteredIncidents =
     dropdown === "All"
       ? incidents
       : incidents.filter((incident) => incident.type === dropdown);
   const isEmpty = filteredIncidents.length < 1;
 
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await apiFetch("api/auth/verify", { method: "GET" });
-
-        if (res.status === 401) {
-          router.replace("/login");
-          return;
-        }
-
-        // Optionally, you can read the user from here if you want
-        // const data = await res.json();
-
-        setCheckingAuth(false);
-      } catch (err) {
-        console.error("Auth check failed", err);
-        router.replace("/login");
-      }
-    };
-
-    verify();
-  }, [router]);
-
-  if (checkingAuth) {
-    // simple loading state while verifying access
-    return <RADashboardSkeleton />;
-  }
-
   return (
     <>
-      <div className="flex flex-col h-full">
-        <ScrollArea className="overflow-x-auto mb-2 mx-3">
+      <div className={cn("flex flex-col h-full mx-3", stickyActionBarClearanceClassName())}>
+        <PageHeader
+          title="Incidents"
+          subtitle="Reports in your section and community"
+        />
+
+        <ScrollArea className="overflow-x-auto mb-2">
           <div className="flex gap-2 overflow-x-auto whitespace-nowrap no-scrollbar">
             <DropDown dropdown={dropdown} setDropdown={setDropdown} />
-
-            <CreateIncidentPopUp
-              communityInfo={community}
-              user={user}
-              rooms={rooms}
-              onSuccess={() => window.location.reload()}
-            />
+            <Button
+              className="hidden md:inline-flex text-white"
+              onClick={() => setCreateOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Create incident
+            </Button>
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -95,65 +64,74 @@ function Page() {
         {isEmpty ? (
           <Empty
             message="No incidents reported"
-            description="You're all caught up. Nothing to review right now."
+            description="You're all caught up. Tap Report incident below to file a new report."
             icon={<ShieldAlert className="h-6 w-6" />}
           />
         ) : (
           <ScrollArea className="flex-1 overflow-y-auto rounded-xs">
-            <div className="flex flex-col gap-1 mx-3 pb-1">
-              {filteredIncidents.map((incident, i) => (
-                <Card
-                  key={i}
-                  className="px-3 py-2 md:border-0 md:border-b md:shadow-none md:rounded-none"
-                >
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1" className="border-none">
-                      <AccordionTrigger className="hover:no-underline py-2 flex-row-reverse">
-                        <div className="flex w-full items-start justify-between gap-4 text-left">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs text-muted-foreground">
-                              {incident.type}
-                            </span>
-                            <span className="font-medium leading-tight">
-                              {incident.title}
-                            </span>
-                          </div>
-                          <span
-                            className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${
-                              incident.resolved
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {incident.resolved ? "Resolved" : "Unresolved"}
+            <Accordion type="single" collapsible className="flex flex-col gap-1 pb-1">
+              {filteredIncidents.map((incident) => {
+                const id = String(incident._id);
+                return (
+                  <AccordionItem
+                    key={id}
+                    value={id}
+                    className="rounded-lg border bg-card px-3 py-2 md:rounded-none md:border-0 md:border-b md:shadow-none"
+                  >
+                    <AccordionTrigger className="hover:no-underline py-2 flex-row-reverse">
+                      <div className="flex w-full items-start justify-between gap-4 text-left">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs text-muted-foreground">
+                            {incident.type}
+                          </span>
+                          <span className="font-medium leading-tight">
+                            {incident.title}
                           </span>
                         </div>
-                      </AccordionTrigger>
+                        <IncidentStatusBadge resolved={incident.resolved} />
+                      </div>
+                    </AccordionTrigger>
 
-                      <AccordionContent className="relative pb-10 mt-2 space-y-2 text-sm text-muted-foreground">
-                        {/* ...rest of your content unchanged... */}
-                        <div>
-                          <EditIncidentPopUp
-                            communityInfo={community}
-                            user={user}
-                            rooms={rooms}
-                            onSuccess={() => window.location.reload()}
-                            incident={incident}
-                          />
-                          <DeleteIncidentPopUp
-                            incidentId={incident._id} // or whatever your id field is
-                            onSuccess={() => window.location.reload()}
-                          />
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </Card>
-              ))}
-            </div>
+                    <AccordionContent className="relative pb-10 mt-2 space-y-2 text-sm text-muted-foreground">
+                      {incident.description ? (
+                        <p>{incident.description}</p>
+                      ) : null}
+                      {incident.reporter ? (
+                        <p>Reporter: {incident.reporter}</p>
+                      ) : null}
+                      <div>
+                        <EditIncidentPopUp
+                          communityInfo={community}
+                          user={user}
+                          rooms={rooms}
+                          onSuccess={() => refreshIncidents()}
+                          incident={incident}
+                        />
+                        <DeleteIncidentPopUp
+                          incidentId={incident._id}
+                          onSuccess={() => refreshIncidents()}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
           </ScrollArea>
         )}
       </div>
+
+      <ReportIncidentStickyBar onClick={() => setCreateOpen(true)} />
+
+      <CreateIncidentPopUp
+        communityInfo={community}
+        user={user}
+        rooms={rooms}
+        onSuccess={() => refreshIncidents()}
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        hideTrigger
+      />
     </>
   );
 }

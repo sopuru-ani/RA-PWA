@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useNotification } from "@/context/notification-context";
+import ImportStepIndicator from "@/components/housing/ImportStepIndicator";
 import { apiFetch } from "@/lib/api-client";
 import {
   type ResidentImportRow,
@@ -515,7 +516,7 @@ function TableStep({
   return (
     <div
       className={`w-full flex flex-col gap-3 ${
-        polished ? "h-full p-4" : "min-h-[60dvh]"
+        polished ? "h-full p-4 pb-24" : "min-h-[60dvh]"
       }`}
     >
       <div className="flex flex-row justify-between items-center">
@@ -526,7 +527,7 @@ function TableStep({
             className={
               polished
                 ? "text-white p-1.5 rounded-full bg-primary hover:bg-primary-hover transition-all"
-                : "p-1.5 rounded-full bg-primary"
+                : "p-1.5 rounded-full bg-primary text-white"
             }
             title={polished ? "Back to worksheet selection" : undefined}
           >
@@ -534,7 +535,9 @@ function TableStep({
           </button>
           {redoButton}
         </div>
-        <div className={`flex items-center gap-3 ${polished ? "text-sm" : ""}`}>
+        <div
+          className={`flex items-center gap-3 ${polished ? "text-sm hidden md:flex" : ""}`}
+        >
           {polished && (
             <>
               <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
@@ -669,6 +672,26 @@ function TableStep({
           <span className="text-red-500">*</span> are required.
         </p>
       )}
+
+      {polished && (
+        <div className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 border-t bg-background/95 backdrop-blur px-4 py-3 md:static md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm">
+              <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                <CheckCircle2 className="w-4 h-4" />
+                {validCount} valid
+              </span>
+              {invalidCount > 0 && (
+                <span className="flex items-center gap-1 text-red-500 text-xs mt-0.5">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  {invalidCount} errors
+                </span>
+              )}
+            </div>
+            {submitButton}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -694,7 +717,12 @@ export default function ResidentBulkImport({
   }
 
   return (
-    <div className={variant === "polished" ? "w-full h-full" : "pb-4"}>
+    <div className={variant === "polished" ? "w-full h-full flex flex-col" : "pb-4"}>
+      <ImportStepIndicator
+        current={step}
+        className={variant === "polished" ? "border-b shrink-0" : "mb-2"}
+      />
+      <div className={variant === "polished" ? "flex-1 min-h-0" : undefined}>
       {step === "drop" && (
         <DropzoneStep
           onFileLoaded={(wb, name) => {
@@ -733,6 +761,7 @@ export default function ResidentBulkImport({
           onRedo={handleRedo}
         />
       )}
+      </div>
     </div>
   );
 }

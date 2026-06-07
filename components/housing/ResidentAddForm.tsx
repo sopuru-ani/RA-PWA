@@ -274,7 +274,7 @@ export default function ResidentAddForm({
         confirmLabel="Add resident"
         onConfirm={handleSubmit}
         trigger={
-          <Button type="button" disabled={loading || !roomId} className="w-full">
+          <Button type="button" disabled={loading || !roomId} className="w-full text-white">
             {loading ? "Adding..." : "Add resident"}
           </Button>
         }

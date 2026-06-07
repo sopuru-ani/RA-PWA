@@ -106,7 +106,7 @@ export default function ResidentProfileForm({
           onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
         />
       </div>
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full text-white" disabled={loading}>
         {loading ? "Saving..." : submitLabel}
       </Button>
     </form>

@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import ListSkeleton from "@/components/housing/ListSkeleton";
+import EntityNotFound from "@/components/housing/EntityNotFound";
 import { roleLabelShort } from "@/lib/role-labels";
 import type { ResidentWithStaff } from "@/types/admin";
 
@@ -28,7 +29,13 @@ export default function SAResidentDetailPage() {
 
   if (loading) return <ListSkeleton rows={3} />;
   if (!resident) {
-    return <p className="text-sm text-muted-foreground">Resident not found.</p>;
+    return (
+      <EntityNotFound
+        message="Resident not found"
+        backHref="/sa/dashboard/residents"
+        backLabel="All residents"
+      />
+    );
   }
 
   return (

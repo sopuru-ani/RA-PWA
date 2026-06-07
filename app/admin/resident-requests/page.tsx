@@ -12,16 +12,11 @@ import ListSkeleton from "@/components/housing/ListSkeleton";
 import Empty from "@/components/RA/Empty";
 import ConfirmActionDialog from "@/components/housing/ConfirmActionDialog";
 import { useNotification } from "@/context/notification-context";
-import type {
-  ResidentChangeRequestItem,
-  ResidentChangeRequestType,
-} from "@/types/admin";
-
-function requestTypeLabel(type?: ResidentChangeRequestType): string {
-  if (type === "update") return "Update";
-  if (type === "remove") return "Removal";
-  return "Add";
-}
+import {
+  requestTypeBadgeVariant,
+  requestTypeLabel,
+} from "@/lib/resident-request-labels";
+import type { ResidentChangeRequestItem } from "@/types/admin";
 
 function approveDescription(item: ResidentChangeRequestItem): string {
   const type = item.requestType ?? "add";
@@ -105,7 +100,9 @@ function RequestCard({
         <div className="flex justify-between gap-2 flex-wrap">
           <p className="font-medium">{item.fullName}</p>
           <div className="flex gap-2">
-            <Badge variant="outline">{requestTypeLabel(type)}</Badge>
+            <Badge variant={requestTypeBadgeVariant(type)}>
+              {requestTypeLabel(type)}
+            </Badge>
             <Badge variant="secondary">{item.status}</Badge>
           </div>
         </div>
@@ -174,7 +171,7 @@ function RequestCard({
               description={approveDescription(item)}
               confirmLabel="Approve"
               onConfirm={() => onApprove(item._id)}
-              trigger={<Button size="sm">Approve</Button>}
+              trigger={<Button size="sm" className="text-white">Approve</Button>}
             />
             <Button size="sm" variant="outline" onClick={() => onStartReject(item._id)}>
               Reject
@@ -231,8 +228,12 @@ function BatchGroupCard({
   return (
     <Card>
       <CardContent className="py-3 space-y-3 text-sm">
-        <div className="flex justify-between gap-2 flex-wrap items-start">
-          <div className="space-y-1">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex w-full justify-between gap-2 flex-wrap items-start text-left rounded-md -mx-1 px-1 py-0.5 hover:bg-muted/40 transition-colors"
+        >
+          <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <p className="font-medium">Bulk upload</p>
               <Badge variant="outline">Add</Badge>
@@ -245,19 +246,15 @@ function BatchGroupCard({
               Submitted by {submitter} · batch {batchId.slice(0, 8)}…
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onToggle}
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          >
+          <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground pt-1">
             {expanded ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
               <ChevronRight className="h-4 w-4" />
             )}
-            {expanded ? "Hide" : "Show"} residents
-          </button>
-        </div>
+            {expanded ? "Hide" : "Show"}
+          </span>
+        </button>
 
         {rejectBatchId === batchId ? (
           <div className="space-y-2 border-t pt-3">
@@ -289,7 +286,7 @@ function BatchGroupCard({
               description={`Add all ${requests.length} residents from this bulk upload? Rows that fail validation (duplicates, full rooms, etc.) will be skipped and reported.`}
               confirmLabel="Approve batch"
               onConfirm={() => onApproveBatch(batchId)}
-              trigger={<Button size="sm">Approve batch</Button>}
+              trigger={<Button size="sm" className="text-white">Approve batch</Button>}
             />
             <Button
               size="sm"

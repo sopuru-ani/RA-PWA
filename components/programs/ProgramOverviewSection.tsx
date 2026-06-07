@@ -102,7 +102,7 @@ export default function ProgramOverviewSection({ role, stats }: Props) {
             <Alert>
               <AlertDescription>
                 {stats.draftOrPendingOwnCount} of your programs need action
-                (draft, pending approval, or rejected).
+                (draft or rejected).
               </AlertDescription>
             </Alert>
           )}

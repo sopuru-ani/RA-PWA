@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ListSkeleton from "@/components/housing/ListSkeleton";
+import EntityNotFound from "@/components/housing/EntityNotFound";
 import ResidentProfileForm, {
   residentToFormValues,
 } from "@/components/housing/ResidentProfileForm";
@@ -117,7 +118,13 @@ export default function GAResidentDetailPage() {
 
   if (loading) return <ListSkeleton rows={3} />;
   if (!resident) {
-    return <p className="text-sm text-muted-foreground">Resident not found.</p>;
+    return (
+      <EntityNotFound
+        message="Resident not found"
+        backHref="/ga/dashboard/residents"
+        backLabel="All residents"
+      />
+    );
   }
 
   const hasPending = !!pendingRequest;
@@ -207,7 +214,7 @@ export default function GAResidentDetailPage() {
                   description="An administrator must approve these changes before they take effect."
                   confirmLabel="Submit"
                   onConfirm={() => submitUpdateRequest(draft)}
-                  trigger={<Button className="flex-1">Confirm submit</Button>}
+                  trigger={<Button className="flex-1 text-white">Confirm submit</Button>}
                 />
               ) : null}
             </div>

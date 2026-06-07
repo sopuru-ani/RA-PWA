@@ -1,7 +1,7 @@
 "use client";
 import { Croissant } from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,8 @@ import { ChevronsUpDown } from "lucide-react";
 import { UserType } from "@/db/user.model";
 import { RoomWithVacancy } from "@/db/room.model";
 import { ResidentLean } from "@/db/resident.model";
+import { formatUserAssignment } from "@/lib/formatters";
+import { roleLabelLong } from "@/lib/role-labels";
 
 type Props = {
   user: UserType;
@@ -23,17 +25,20 @@ type Props = {
 
 function RAHeader({ user, vacancies, residents }: Props) {
   const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(true);
-  // console.log(vacancies);
-  // console.log(user);
+  const assignmentLabel = formatUserAssignment(
+    user.assignment,
+    user.community,
+  );
+  const section = user.assignment[0];
+
   return (
     <div className="relative">
       <Collapsible open={collapsibleIsOpen} onOpenChange={setCollapsibleIsOpen}>
-        {/* <Card className="rounded-none border-x-0 border-t-0"> */}
         <CardContent className="space-y-1 py-2">
           <div className="flex justify-between">
             <div>
               <p className="text-sm text-muted-foreground">
-                {user.role === "RA" ? "Resident Assistant" : ""}
+                {roleLabelLong(user.role)}
               </p>
               <p className="text-lg font-semibold">
                 <Croissant className="inline" />
@@ -48,7 +53,9 @@ function RAHeader({ user, vacancies, residents }: Props) {
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent className="">
-            <p className="text-sm text-muted-foreground">{user.assignment}</p>
+            {assignmentLabel ? (
+              <p className="text-sm text-muted-foreground">{assignmentLabel}</p>
+            ) : null}
             <Separator className="my-1" />
 
             <div className="flex justify-between text-sm">
@@ -56,7 +63,7 @@ function RAHeader({ user, vacancies, residents }: Props) {
                 <span className="font-medium">
                   {
                     residents.filter((resident) => {
-                      return resident.section === user.assignment[0];
+                      return resident.section === section;
                     }).length
                   }
                 </span>
@@ -66,7 +73,7 @@ function RAHeader({ user, vacancies, residents }: Props) {
                 <span className="font-medium">
                   {
                     vacancies.filter((vacant) => {
-                      return vacant.section === user.assignment[0];
+                      return vacant.section === section;
                     }).length
                   }
                 </span>
@@ -75,7 +82,6 @@ function RAHeader({ user, vacancies, residents }: Props) {
             </div>
           </CollapsibleContent>
         </CardContent>
-        {/* </Card> */}
       </Collapsible>
     </div>
   );

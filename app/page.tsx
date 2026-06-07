@@ -5,6 +5,7 @@ import {
   DoorOpen,
   AlertTriangle,
   ClipboardCheck,
+  CalendarDays,
   ArrowRight,
   Shield,
   Clock,
@@ -52,6 +53,12 @@ const features = [
     description:
       "Conduct walkthroughs, track room status, and ensure all housing standards are met.",
   },
+  {
+    icon: CalendarDays,
+    title: "Programs",
+    description:
+      "Plan events, manage RSVPs, and keep staff aligned with a shared calendar.",
+  },
 ];
 
 const benefits = [
@@ -79,7 +86,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
 
         <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-32 lg:py-40">
@@ -89,7 +96,7 @@ export default function Home() {
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-foreground/10 bg-background/50 backdrop-blur-sm p-2 shadow-lg">
                 <Logo className="w-full h-full text-foreground" />
               </div>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Domus
               </h1>
             </div>
@@ -102,7 +109,7 @@ export default function Home() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-              <Button asChild size="lg" className="text-base px-8 h-12">
+              <Button asChild size="lg" className="text-base px-8 h-12 text-white">
                 <Link href="/login">
                   Log in
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -139,7 +146,7 @@ export default function Home() {
                 key={feature.title}
                 className="group relative bg-card rounded-2xl border p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300"
               >
-                <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                   <feature.icon className="w-6 h-6" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>

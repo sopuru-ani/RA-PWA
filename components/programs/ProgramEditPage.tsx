@@ -39,12 +39,13 @@ export default function ProgramEditPage({
         if (!mounted) return;
         setProgram(data.program);
       } catch (err) {
+        if (!mounted) return;
         show({
           msg: err instanceof Error ? err.message : "Failed to load program",
           type: "error",
-          closable: true,
-          duration: null,
+          duration: 3000,
         });
+        router.replace(backHref);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -53,7 +54,7 @@ export default function ProgramEditPage({
     return () => {
       mounted = false;
     };
-  }, [programId, show]);
+  }, [programId, show, router, backHref]);
 
   async function handleSubmit(input: CreateProgramInput) {
     setSaving(true);
@@ -73,18 +74,10 @@ export default function ProgramEditPage({
     }
   }
 
-  if (loading || communitiesLoading) {
+  if (loading || communitiesLoading || !program) {
     return (
       <div className="mx-auto max-w-2xl px-3 py-8">
         <ListSkeleton rows={8} />
-      </div>
-    );
-  }
-
-  if (!program) {
-    return (
-      <div className="mx-auto max-w-2xl px-3 py-8 text-sm text-muted-foreground">
-        Program not found.
       </div>
     );
   }

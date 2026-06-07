@@ -5,7 +5,17 @@ import { NotificationProvider } from "@/context/notification-context";
 
 export const metadata: Metadata = {
   title: "Domus",
-  description: "Tool to help Resident Assistants just a bit",
+  description:
+    "Housing operations for resident assistants, area directors, and housing staff.",
+  appleWebApp: {
+    capable: true,
+    title: "Domus",
+    statusBarStyle: "default",
+  },
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#6b0f1a" },
+    { media: "(prefers-color-scheme: dark)", color: "#6b0f1a" },
+  ],
 };
 
 export default function RootLayout({
@@ -15,9 +25,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta name="apple-mobile-web-app-title" content="MyWebSite" />
-      </head>
       <body>
         <ThemeProvider
           attribute="class"

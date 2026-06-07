@@ -175,7 +175,7 @@ function MyDropzone() {
               </p>
               <button
                 onClick={resetUpload}
-                className="p-2 bg-primary rounded-md hover:bg-primary-hover"
+                className="p-2 bg-primary text-white rounded-md hover:bg-primary-hover"
               >
                 <RefreshCcw className="w-4 h-4" />
               </button>
@@ -314,7 +314,7 @@ function WorksheetTable({
           <div className="flex gap-2 items-center">
             <button
               onClick={() => setIsEditing((prev) => !prev)}
-              className="flex items-center gap-1 p-2 bg-primary rounded-md hover:bg-primary-hover"
+              className="flex items-center gap-1 p-2 bg-primary text-white rounded-md hover:bg-primary-hover"
             >
               <Pencil className="w-4 h-4" />
               {isEditing ? "Done" : "Edit"}
@@ -326,7 +326,7 @@ function WorksheetTable({
                 setWorkSheet(undefined);
                 onReset();
               }}
-              className="p-2 bg-primary rounded-md hover:bg-primary-hover"
+              className="p-2 bg-primary text-white rounded-md hover:bg-primary-hover"
             >
               <RefreshCcw className="w-4 h-4" />
             </button>

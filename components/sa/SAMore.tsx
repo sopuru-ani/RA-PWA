@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch, clearAuthToken } from "@/lib/api-client";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuGroup,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -19,18 +17,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import type { LucideIcon } from "lucide-react";
-import ProgramNavBadge from "@/components/programs/ProgramNavBadge";
-import { useSASession } from "@/context/SASessionContext";
+import NavMoreTrigger from "@/components/nav/NavMoreTrigger";
+import { calendarPath } from "@/lib/program-labels";
 
 type Props = {
   label: string;
   icon: LucideIcon;
 };
 
-function SAMore({ label, icon: Icon }: Props) {
+function SAMore({ label, icon }: Props) {
   const router = useRouter();
   const { setTheme } = useTheme();
-  const { stats } = useSASession();
 
   async function logout() {
     try {
@@ -43,23 +40,16 @@ function SAMore({ label, icon: Icon }: Props) {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="navItem" size="navItem">
-          <Icon className="h-5! w-5!" />
-          <span>{label}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 mx-2" align="start">
+    <div className="w-full min-w-0">
+      <DropdownMenu>
+        <NavMoreTrigger label={label} icon={icon} />
+      <DropdownMenuContent className="w-56 mx-2" align="end">
         <DropdownMenuLabel>Student Assistant</DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Link href="/sa/dashboard/programs" className="flex items-center w-full">
-            Programs
-            <ProgramNavBadge stats={stats.programStats} />
-          </Link>
+          <Link href={calendarPath("SA")}>Calendar</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/sa/calendar">Calendar</Link>
+          <Link href="/sa/dashboard/programs/new">Create a program</Link>
         </DropdownMenuItem>
         <DropdownMenuGroup>
           <DropdownMenuSub>
@@ -83,7 +73,8 @@ function SAMore({ label, icon: Icon }: Props) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => logout()}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
-    </DropdownMenu>
+      </DropdownMenu>
+    </div>
   );
 }
 

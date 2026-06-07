@@ -18,6 +18,7 @@ This folder holds documentation written during Cursor agent sessions so work sur
 | [programs-audience-staff-ui-session.md](./programs-audience-staff-ui-session.md) | Audience picker fixes, staff DB reconciliation, open invitations (any role/community), program form UI polish | [Programs audience & staff UI](68ca658c-7fda-4937-91f3-e05357467d76) |
 | [programs-attendance-attachments-permissions.md](./programs-attendance-attachments-permissions.md) | Attendance view/edit split (creator + admin mark; GA view-only), CSV export scope, post-publish link attachments for invitees | — |
 | [sprint-5-microsoft-graph-outlook.md](./sprint-5-microsoft-graph-outlook.md) | Sprint 5 plan: Microsoft Graph Mode A, Azure/IT checklist, hooks, testing — for future Outlook integration | — |
+| [ui-ux-refinement-phases-1-6.md](./ui-ux-refinement-phases-1-6.md) | Phased UI/UX polish: PWA, nav/shell, programs/incidents/inspections mobile UX, maroon+white tokens, PageHeader/EmptyState, dev route gating, README | [UI/UX refinement Phases 1–6](31bb20ea-d5af-463a-aff9-1866158db1c5) |
 
 ## How to use these docs
 

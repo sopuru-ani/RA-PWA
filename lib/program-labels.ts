@@ -61,6 +61,6 @@ export function calendarPath(role: ProgramCreatorRole | string): string {
     case "SA":
       return "/sa/calendar";
     default:
-      return "/ra/calendar";
+      return "/ra/dashboard/calendar";
   }
 }

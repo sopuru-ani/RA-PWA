@@ -1,10 +1,12 @@
 "use client";
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import { ResidentsContext } from "@/context/RAResidentProvider";
 
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import RABottomNav from "@/components/RA/RABottomNav";
 import RAHeader from "@/components/RA/RAHeader";
 
@@ -17,9 +19,21 @@ import { RoomcheckLean, InspectionSession } from "@/db/roomcheck.model";
 import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import { apiFetch } from "@/lib/api-client";
 import type { ProgramStats } from "@/types/programs";
+
+type DashboardPayload = {
+  msg: string;
+  residents: ResidentLean[];
+  rooms: RoomWithVacancy[];
+  user: UserType;
+  communityInfo: CommunityLean[];
+  incidents: IncidentLean[];
+  roomsChecked: RoomcheckLean;
+  walkthroughs: InspectionSession[];
+  programStats?: ProgramStats;
+};
+
 function layout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  // then in your component
 
   const defaultUser: UserType = {
     firstName: "",
@@ -38,92 +52,112 @@ function layout({ children }: { children: ReactNode }) {
   const [walkthroughs, setWalkthroughs] = useState<InspectionSession[]>([]);
   const [vacancy, setVacancy] = useState<RoomWithVacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [programStats, setProgramStats] = useState<ProgramStats | undefined>();
 
-  useEffect(() => {
-    let isMounted = true;
-    async function fetchResidents() {
-      try {
-        const response = await apiFetch("api/ra/dashboard", {
-          method: "GET",
-        });
-        const result: {
-          msg: string;
-          residents: ResidentLean[];
-          rooms: RoomWithVacancy[];
-          user: UserType;
-          communityInfo: CommunityLean[];
-          incidents: IncidentLean[];
-          roomsChecked: RoomcheckLean;
-          walkthroughs: InspectionSession[];
-          programStats?: ProgramStats;
-        } = await response.json();
-
-        if (response.status === 401) {
-          router.replace("/login");
-          return;
-        }
-        if (isMounted) {
-          setResidents(result.residents);
-          setRooms(result.rooms);
-          setUser(result.user);
-          setCommunity(result.communityInfo);
-          setIncidents(result.incidents);
-          setWalkthroughs(result.walkthroughs);
-          if (result.roomsChecked) {
-            setSessionId(result.roomsChecked.inspectionSession || null);
-          }
-
-          const vacancies = result.rooms.filter(
-            (room) => Number(room.vacancy) > 0,
-          );
-
-          setVacancy(vacancies);
-          setProgramStats(result.programStats);
-        }
-      } catch (error) {
-        console.error("Failed to fetch residents:", error);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
+  const applyDashboardResult = useCallback((result: DashboardPayload) => {
+    setResidents(result.residents);
+    setRooms(result.rooms);
+    setUser(result.user);
+    setCommunity(result.communityInfo);
+    setIncidents(result.incidents);
+    setWalkthroughs(result.walkthroughs);
+    if (result.roomsChecked) {
+      setSessionId(result.roomsChecked.inspectionSession || null);
     }
-
-    fetchResidents();
-
-    return () => {
-      isMounted = false;
-    };
+    setVacancy(result.rooms.filter((room) => Number(room.vacancy) > 0));
+    setProgramStats(result.programStats);
   }, []);
-  if (loading) return <RADashboardSkeleton />;
-  return (
-    <>
-      <ResidentsContext.Provider
-        value={{
-          residents,
-          rooms,
-          user,
-          vacancy,
-          community,
-          incidents,
-          roomChecked,
-          sessionId,
-          walkthroughs,
-          programStats,
-        }}
-      >
-        <div className="flex flex-col h-dvh">
-          <RAHeader user={user} vacancies={vacancy} residents={residents} />
 
-          <Separator />
-          <div className="relative min-h-0 flex-1 overflow-y-auto px-2 py-2">
-            {children}
-          </div>
-          <RABottomNav />
+  const loadDashboard = useCallback(async () => {
+    setFetchError(null);
+    try {
+      const response = await apiFetch("api/ra/dashboard", {
+        method: "GET",
+      });
+      const result: DashboardPayload = await response.json();
+
+      if (response.status === 401) {
+        router.replace("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        setFetchError(result.msg ?? "Failed to load dashboard");
+        return;
+      }
+
+      applyDashboardResult(result);
+    } catch (error) {
+      console.error("Failed to fetch residents:", error);
+      setFetchError("Network error. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [applyDashboardResult, router]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
+
+  const refreshIncidents = useCallback(async () => {
+    try {
+      const response = await apiFetch("api/ra/dashboard", { method: "GET" });
+      const result: DashboardPayload = await response.json();
+      if (response.ok) {
+        setIncidents(result.incidents);
+      }
+    } catch (error) {
+      console.error("Failed to refresh incidents:", error);
+    }
+  }, []);
+
+  if (loading) return <RADashboardSkeleton />;
+
+  if (fetchError) {
+    return (
+      <div className="flex h-dvh flex-col items-center justify-center gap-4 px-6">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertDescription>{fetchError}</AlertDescription>
+        </Alert>
+        <Button className="text-white" onClick={() => {
+          setLoading(true);
+          loadDashboard();
+        }}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <ResidentsContext.Provider
+      value={{
+        residents,
+        rooms,
+        user,
+        vacancy,
+        community,
+        incidents,
+        roomChecked,
+        sessionId,
+        walkthroughs,
+        programStats,
+        refreshIncidents,
+      }}
+    >
+      <div className="flex flex-col h-dvh">
+        <RAHeader user={user} vacancies={vacancy} residents={residents} />
+
+        <Separator />
+        <div className="relative min-h-0 flex-1 overflow-y-auto px-2 py-2">
+          {children}
         </div>
-      </ResidentsContext.Provider>
-    </>
+        <RABottomNav />
+      </div>
+    </ResidentsContext.Provider>
   );
 }
 

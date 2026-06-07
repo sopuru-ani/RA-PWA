@@ -39,16 +39,31 @@ interface Props {
   user: UserType;
   rooms: RoomLean[];
   onSuccess: () => void;
+  /** Controlled dialog open state (optional) */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Hide built-in trigger; use with external buttons */
+  hideTrigger?: boolean;
 }
 
 import { apiFetch } from "@/lib/api-client";
-function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
+function CreateIncidentPopUp({
+  communityInfo,
+  user,
+  rooms,
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  hideTrigger = false,
+}: Props) {
   const router = useRouter();
   const { show } = useNotification();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [internalDialogOpen, setInternalDialogOpen] = useState(false);
+  const dialogOpen = controlledOpen ?? internalDialogOpen;
+  const setDialogOpen = controlledOnOpenChange ?? setInternalDialogOpen;
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [incidentType, setIncidentType] = useState("Maintenance");
   const communitySections = communityInfo[0]?.section ?? [];
@@ -174,11 +189,13 @@ function CreateIncidentPopUp({ communityInfo, user, rooms, onSuccess }: Props) {
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="text-white">
-            <Plus /> Create Incident
-          </Button>
-        </DialogTrigger>
+        {!hideTrigger && (
+          <DialogTrigger asChild>
+            <Button className="text-white">
+              <Plus /> Create Incident
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent
           className="flex flex-col h-[calc(100dvh-2rem)] min-w-[calc(100dvw-2rem)] content-start gap-0 px-3 md:px-6"
           onInteractOutside={(e) => e.preventDefault()}

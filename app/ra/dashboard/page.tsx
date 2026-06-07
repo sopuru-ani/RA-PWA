@@ -1,66 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import RACollapsibleResident from "@/components/RA/RACollapsibleResident";
 import ButtonsAndSearchBar from "@/components/RA/ButtonsAndSearchBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import type { ResidentLean } from "@/db/resident.model";
-
 import { useResidents } from "@/context/RAResidentProvider";
-import { UserType } from "@/db/user.model";
-import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
 
-import { apiFetch } from "@/lib/api-client";
-import ProgramAlertBanner from "@/components/programs/ProgramAlertBanner";
-import type { ProgramStats } from "@/types/programs";
-
 function page() {
-  const {
-    residents,
-    user,
-    programStats,
-  }: {
-    residents: ResidentLean[];
-    user: UserType;
-    programStats?: ProgramStats;
-  } = useResidents();
+  const { residents, user } = useResidents();
 
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
-  // const [empty, setEmpty] = useState<boolean>(false);
   const [selected, setSelected] = useState("Section");
   const [sort, setSort] = useState("Names");
   const [search, setSearch] = useState("");
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await apiFetch("api/auth/verify", {
-          method: "GET",
-        });
 
-        if (res.status === 401) {
-          router.replace("/login");
-          return;
-        }
-
-        // Optionally, you can read the user from here if you want
-        // const data = await res.json();
-
-        setCheckingAuth(false);
-      } catch (err) {
-        console.error("Auth check failed", err);
-        router.replace("/login");
-      }
-    };
-
-    verify();
-  }, [router]);
-  if (checkingAuth) {
-    // simple loading state while verifying access
-    return <RADashboardSkeleton />;
-  }
   const filteredResidents = residents
     .filter((r) => {
       if (selected === "Section") {
@@ -79,7 +32,6 @@ function page() {
       if (sort === "Names") {
         return a.fullName.localeCompare(b.fullName);
       }
-      // return a.room.localeCompare(b.room);
       const sectionCompare = a.section.localeCompare(b.section);
       if (sectionCompare !== 0) {
         return sectionCompare;
@@ -90,13 +42,7 @@ function page() {
   const empty = filteredResidents.length === 0;
 
   return (
-    <>
-      <ProgramAlertBanner
-        stats={programStats}
-        programsHref="/ra/dashboard/programs"
-        calendarHref="/ra/calendar"
-      />
-      <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full">
         <div className="mx-3">
           <ButtonsAndSearchBar
             selected={selected}
@@ -127,7 +73,6 @@ function page() {
           </ScrollArea>
         )}
       </div>
-    </>
   );
 }
 

@@ -378,7 +378,7 @@ export default function AdminCommunityDetailPage() {
               value={newSection}
               onChange={(e) => setNewSection(e.target.value)}
             />
-            <Button onClick={addSection} disabled={!newSection.trim()}>
+            <Button onClick={addSection} disabled={!newSection.trim()} className="text-white">
               Add
             </Button>
           </div>
@@ -573,7 +573,7 @@ export default function AdminCommunityDetailPage() {
             <Button variant="outline" onClick={() => setRenameOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={renameCommunity}>Save</Button>
+            <Button onClick={renameCommunity} className="text-white">Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -598,7 +598,7 @@ export default function AdminCommunityDetailPage() {
             <Button variant="outline" onClick={() => setRenameSection(null)}>
               Cancel
             </Button>
-            <Button onClick={saveSectionRename}>Save</Button>
+            <Button onClick={saveSectionRename} className="text-white">Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

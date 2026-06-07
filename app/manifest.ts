@@ -4,13 +4,14 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Domus',
     short_name: 'Domus',
-    description: 'Tool to help Resident Assistants just a bit',
+    description:
+      'Housing operations for resident assistants, area directors, and housing staff.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
-    theme_color: '#000000',
+    theme_color: '#6b0f1a',
     scope: '/',
-    orientation: 'portrait',
+    orientation: 'any',
     icons: [
       {
         src: '/web-app-manifest-192x192.png',

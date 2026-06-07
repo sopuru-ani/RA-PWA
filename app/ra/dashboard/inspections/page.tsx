@@ -1,25 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { Plus, ClipboardCheck } from "lucide-react";
-
+import { ClipboardCheck } from "lucide-react";
 import Link from "next/link";
 
 import { useResidents } from "@/context/RAResidentProvider";
-import { RoomcheckLean, InspectionSession } from "@/db/roomcheck.model";
+import { InspectionSession } from "@/db/roomcheck.model";
 import Walkthroughs from "@/components/RA/Inspections/Walkthroughs";
-
-import RADashboardSkeleton from "@/components/RA/RADashboardSkeleton";
 import Empty from "@/components/RA/Empty";
 
-import { apiFetch } from "@/lib/api-client";
 function page() {
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
   const {
     sessionId,
     walkthroughs,
@@ -27,47 +18,17 @@ function page() {
     useResidents();
 
   const isEmpty = walkthroughs.length < 1;
-  let isResumeSession = false;
-  if (sessionId) {
-    isResumeSession = true;
-  }
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await apiFetch("api/auth/verify", { method: "GET" });
+  const isResumeSession = Boolean(sessionId);
 
-        if (res.status === 401) {
-          router.replace("/login");
-          return;
-        }
-
-        // Optionally, you can read the user from here if you want
-        // const data = await res.json();
-
-        setCheckingAuth(false);
-      } catch (err) {
-        console.error("Auth check failed", err);
-        router.replace("/login");
-      }
-    };
-
-    verify();
-  }, [router]);
-
-  if (checkingAuth) {
-    // simple loading state while verifying access
-    return <RADashboardSkeleton />;
-  }
   return (
     <div className="flex flex-col h-full">
       <div className="mb-2 mx-3">
-        {/* <Button className="text-white bg-orange-500">
-          Finish Last Inspection Session
-        </Button> */}
         <Link href="/ra/inspectionSession">
           <Button
             className={
-              isResumeSession ? "bg-orange-500 text-white" : "text-white"
+              isResumeSession
+                ? "bg-orange-500 text-primary-foreground hover:bg-orange-500/90"
+                : undefined
             }
           >
             {isResumeSession

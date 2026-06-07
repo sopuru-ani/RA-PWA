@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import ListSkeleton from "@/components/housing/ListSkeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNotification } from "@/context/notification-context";
 import { roleLabelShort } from "@/lib/role-labels";
 import {
@@ -121,7 +122,16 @@ export default function ProgramAttendanceTable({
   }
 
   if (error) {
-    return null;
+    return (
+      <Alert variant="destructive">
+        <AlertDescription className="flex items-center justify-between gap-2">
+          <span>{error}</span>
+          <Button type="button" size="sm" variant="outline" onClick={load}>
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   if (rows.length === 0) {
@@ -241,7 +251,7 @@ export default function ProgramAttendanceTable({
       {!readOnly && changed && (
         <Button
           type="button"
-          className="w-full text-white"
+          className="w-full"
           disabled={saving}
           onClick={handleSave}
         >

@@ -9,6 +9,8 @@ const SHORT: Record<string, string> = {
 const LONG: Record<string, string> = {
   GA: "Area Director",
   SA: "Student Assistant",
+  RA: "Resident Assistant",
+  Admin: "Administrator",
 };
 
 /** Short label for badges, filters, compact UI (e.g. AD) */

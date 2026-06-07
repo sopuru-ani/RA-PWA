@@ -7,7 +7,6 @@ import type { RoomcheckLean } from "@/db/roomcheck.model";
 import type { UserType } from "@/db/user.model";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
 import {
   AccordionTrigger,
@@ -20,9 +19,12 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 
-import { Camera } from "lucide-react";
-
 import Spinner from "@/components/RA/Spinner";
+import InspectionSessionHeader from "@/components/inspections/InspectionSessionHeader";
+import InspectionSessionFinishBar from "@/components/inspections/InspectionSessionFinishBar";
+import RoomSaveButton, {
+  type RoomSaveStatus,
+} from "@/components/inspections/RoomSaveButton";
 
 type ResidentInspection = {
   studentId: string;
@@ -97,6 +99,10 @@ function page() {
   const [user, setUser] = useState<UserType>(defaultUser);
   const [vacancy, setVacancy] = useState<RoomWithVacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [roomSaveStatus, setRoomSaveStatus] = useState<
+    Record<string, RoomSaveStatus>
+  >({});
+  const [finishing, setFinishing] = useState(false);
 
   // 🔑 ARRAY OF ROOM INSPECTIONS
   const [inspectionData, setInspectionData] = useState<RoomInspectionDraft[]>(
@@ -297,7 +303,13 @@ function page() {
     return completedRooms;
   }
 
-  async function oneRoomChecked(roomNumber: string) {
+  function roomKey(sectionName: string, room: string) {
+    return `${sectionName}-${room}`;
+  }
+
+  async function oneRoomChecked(roomNumber: string, roomSection: string) {
+    const key = roomKey(roomSection, roomNumber);
+    setRoomSaveStatus((prev) => ({ ...prev, [key]: "saving" }));
     const oneRoom = displayEach(roomNumber);
     try {
       const response = await apiFetch("api/ga/inspections/room-check", {
@@ -333,10 +345,19 @@ function page() {
               : r,
           ),
         );
+        setRoomSaveStatus((prev) => ({ ...prev, [key]: "saved" }));
+        window.setTimeout(() => {
+          setRoomSaveStatus((prev) => ({ ...prev, [key]: "idle" }));
+        }, 2000);
+      } else {
+        setRoomSaveStatus((prev) => ({ ...prev, [key]: "error" }));
       }
-    } catch (error: unknown) {}
+    } catch {
+      setRoomSaveStatus((prev) => ({ ...prev, [key]: "error" }));
+    }
   }
   async function allChecked() {
+    setFinishing(true);
     try {
       const response = await apiFetch("api/ga/inspections/all-checked", {
         method: "POST",
@@ -360,7 +381,9 @@ function page() {
         localStorage.removeItem(dateKey);
         router.push("/ga/dashboard/inspections");
       }
-    } catch (error: unknown) {}
+    } catch {
+      setFinishing(false);
+    }
   }
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -383,19 +406,11 @@ function page() {
     );
 
   return (
-    <div className="flex flex-col py-2 h-dvh">
-      <div className="px-3 pb-2">
-        <div className="flex flex-row justify-between">
-          <h3>Room checks</h3>
-          <p>
-            {progress}\{rooms.length}
-          </p>
-        </div>
-        <Progress value={(progress / rooms.length) * 100} className="h-1" />
-      </div>
+    <div className="flex flex-col h-dvh">
+      <InspectionSessionHeader completed={progress} total={rooms.length} />
 
-      <ScrollArea className="flex-1 overflow-y-auto rounded-xs">
-        <div className="flex flex-col gap-2 px-3 pb-2">
+      <ScrollArea className="min-h-0 flex-1 overflow-y-auto rounded-xs">
+        <div className="flex flex-col gap-2 px-3 pb-28 pt-2">
           {rooms.map((room, i) => (
             <Card
               className="rounded-2xl shadow-sm py-2 px-3 md:border-0 md:border-b md:shadow-none md:rounded-none"
@@ -556,21 +571,23 @@ function page() {
                         <p>Vacant Room</p>
                       )}
                     </div>
-                    <div className="flex flex-row gap-2 items-center mt-2">
-                      <Button
-                        className={
-                          "text-white hover:opacity-90" +
-                          (isRoomVacant(room) ? " hidden" : "")
-                        }
+                    <div className="mt-2 flex flex-row items-center gap-2">
+                      <RoomSaveButton
+                        hidden={isRoomVacant(room)}
                         disabled={!isRoomComplete(room)}
+                        status={
+                          roomSaveStatus[roomKey(room.section, room.room)] ??
+                          "idle"
+                        }
                         onClick={() => {
                           displayEach(room.room);
-                          oneRoomChecked(room.room);
-                          setProgress(getRoomProgress());
+                          void oneRoomChecked(room.room, room.section).then(
+                            () => {
+                              setProgress(getRoomProgress());
+                            },
+                          );
                         }}
-                      >
-                        checked
-                      </Button>
+                      />
                       {room.updated && (
                         <p>
                           Updated at:{" "}
@@ -588,19 +605,16 @@ function page() {
             </Card>
           ))}
         </div>
-
-        <div className="px-3">
-          <Button
-            className="text-white"
-            disabled={progress < rooms.length}
-            onClick={() => {
-              allChecked();
-            }}
-          >
-            Finish Walkthrough
-          </Button>
-        </div>
       </ScrollArea>
+
+      <InspectionSessionFinishBar
+        completed={progress}
+        total={rooms.length}
+        loading={finishing}
+        onFinish={() => {
+          void allChecked();
+        }}
+      />
     </div>
   );
 }

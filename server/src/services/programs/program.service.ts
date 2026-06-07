@@ -607,7 +607,7 @@ export async function getProgramStats(
       .lean(),
     Program.find({
       createdBy: user._id,
-      status: { $in: ["draft", "pending_approval", "rejected"] },
+      status: { $in: ["draft", "rejected"] },
     }).countDocuments(),
   ]);
 

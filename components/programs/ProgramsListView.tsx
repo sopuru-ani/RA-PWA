@@ -7,6 +7,8 @@ import { Plus, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProgramCard from "@/components/programs/ProgramCard";
 import ListSkeleton from "@/components/housing/ListSkeleton";
+import Empty from "@/components/RA/Empty";
+import PageHeader from "@/components/housing/PageHeader";
 import { useNotification } from "@/context/notification-context";
 import {
   fetchMonitoringPrograms,
@@ -88,23 +90,22 @@ export default function ProgramsListView({
   return (
     <div className="space-y-4 pb-4 mx-3">
       <div className="flex items-start justify-between gap-2">
-        <div>
-          <h1 className="text-xl font-semibold">Programs</h1>
-          <p className="text-sm text-muted-foreground">
-            Events, meetings, and trainings
-          </p>
-        </div>
-        <div className="flex gap-2">
+        <PageHeader
+          title="Programs"
+          subtitle="Events, meetings, and trainings"
+          className="mb-0 min-w-0"
+        />
+        <div className="flex shrink-0 gap-2">
           {showCalendarLink && (
             <Button asChild size="sm" variant="outline">
-              <Link href={calendarPath(role)}>
+              <Link href={calendarPath(role)} aria-label="Open calendar">
                 <CalendarDays className="h-4 w-4" />
               </Link>
             </Button>
           )}
           {showCreate && (
             <Button asChild size="sm" className="text-white">
-              <Link href={`${basePath}/new`}>
+              <Link href={`${basePath}/new`} aria-label="Create program">
                 <Plus className="h-4 w-4" />
               </Link>
             </Button>
@@ -174,7 +175,6 @@ export default function ProgramsListView({
               key={m}
               size="sm"
               variant={mode === m ? "default" : "outline"}
-              className={mode === m ? "text-white" : ""}
               onClick={() => setMode(m)}
             >
               {modeLabels[m]}
@@ -186,7 +186,15 @@ export default function ProgramsListView({
       {loading ? (
         <ListSkeleton rows={4} />
       ) : programs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No programs yet.</p>
+        <Empty
+          message="No programs yet"
+          description={
+            showCreate
+              ? "Create a program or check the calendar for upcoming events."
+              : "Programs in your scope will appear here."
+          }
+          icon={<CalendarDays className="h-6 w-6" />}
+        />
       ) : (
         <div className="flex flex-col space-y-2">
           {programs.map((program) => (

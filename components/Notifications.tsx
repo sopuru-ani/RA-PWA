@@ -22,13 +22,13 @@ function Notifications({
 }: Props) {
   const typeStyles = {
     error:
-      "bg-red-300/70 border-red-400 text-red-800 dark:bg-red-400/30 dark:border-red-500 dark:text-red-100",
+      "bg-destructive/15 border-destructive/40 text-destructive dark:bg-destructive/25 dark:border-destructive/50 dark:text-destructive-foreground",
 
     success:
-      "bg-green-300/70 text-green-800 border-green-400 dark:bg-green-400/30 dark:border-green-500 dark:text-green-100",
+      "bg-emerald-500/15 border-emerald-600/40 text-emerald-900 dark:bg-emerald-500/20 dark:border-emerald-500/50 dark:text-emerald-100",
 
     neutral:
-      "bg-gray-400/70 border-gray-800 text-black dark:bg-gray-300/40 dark:border-gray-700 dark:text-white",
+      "bg-muted border-border text-foreground dark:bg-muted/80",
   };
 
   return (

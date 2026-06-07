@@ -9,14 +9,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProgramStatusBadge from "@/components/programs/ProgramStatusBadge";
 import ProgramCategoryBadge from "@/components/programs/ProgramCategoryBadge";
+import ProgramWorkflowSteps from "@/components/programs/ProgramWorkflowSteps";
 import ProgramRSVPButtons from "@/components/programs/ProgramRSVPButtons";
 import ProgramAttendanceTable from "@/components/programs/ProgramAttendanceTable";
 import ProgramAttachmentsEditor from "@/components/programs/ProgramAttachmentsEditor";
 import ConfirmActionDialog from "@/components/housing/ConfirmActionDialog";
 import ListSkeleton from "@/components/housing/ListSkeleton";
 import { useNotification } from "@/context/notification-context";
+import { formatProgramAudienceSummary } from "@/lib/format-program-audience";
 import {
-  AUDIENCE_TYPE_LABELS,
   programsBasePath,
 } from "@/lib/program-labels";
 import { formatDate, formatTime } from "@/lib/formatters";
@@ -62,16 +63,18 @@ export default function ProgramDetailView({
       setProgram(data.program);
       setInvite(data.invite);
     } catch (err) {
+      setProgram(null);
+      setInvite(undefined);
       show({
         msg: err instanceof Error ? err.message : "Failed to load program",
         type: "error",
-        closable: true,
-        duration: null,
+        duration: 3000,
       });
+      router.replace(backHref);
     } finally {
       setLoading(false);
     }
-  }, [programId, show]);
+  }, [programId, show, router, backHref]);
 
   useEffect(() => {
     load();
@@ -96,12 +99,15 @@ export default function ProgramDetailView({
     label: string,
     fn: () => Promise<void>,
     successMsg: string,
+    options?: { skipReload?: boolean },
   ) {
     setActionLoading(true);
     try {
       await fn();
       show({ msg: successMsg, type: "success", duration: 3000 });
-      await load();
+      if (!options?.skipReload) {
+        await load();
+      }
     } catch (err) {
       show({
         msg: err instanceof Error ? err.message : `${label} failed`,
@@ -132,18 +138,10 @@ export default function ProgramDetailView({
     }
   }
 
-  if (loading) {
+  if (loading || !program) {
     return (
       <div className="mx-3 py-4">
         <ListSkeleton rows={5} />
-      </div>
-    );
-  }
-
-  if (!program) {
-    return (
-      <div className="mx-3 py-4 text-sm text-muted-foreground">
-        Program not found.
       </div>
     );
   }
@@ -153,7 +151,7 @@ export default function ProgramDetailView({
   const base = programsBasePath(userRole);
 
   return (
-    <div className="space-y-4 pb-4 mx-3">
+    <div className="space-y-4 pb-24 md:pb-4 mx-3">
       <Link
         href={backHref}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -185,6 +183,10 @@ export default function ProgramDetailView({
         </Alert>
       )}
 
+      {program.status !== "cancelled" && (
+        <ProgramWorkflowSteps status={program.status} />
+      )}
+
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Calendar className="h-4 w-4" />
@@ -203,15 +205,8 @@ export default function ProgramDetailView({
           </div>
         )}
         <p className="text-muted-foreground">
-          Audience: {AUDIENCE_TYPE_LABELS[program.audience.type]}
+          {formatProgramAudienceSummary(program)}
         </p>
-        {program.communities.length > 0 ? (
-          <p className="text-muted-foreground">
-            Communities: {program.communities.join(", ")}
-          </p>
-        ) : (
-          <p className="text-muted-foreground">Department-wide</p>
-        )}
       </div>
 
       <p className="text-sm leading-relaxed">{program.description}</p>
@@ -225,14 +220,26 @@ export default function ProgramDetailView({
       ) : null}
 
       {program.status === "published" && invite && (
-        <div className="space-y-2 pt-2 border-t">
-          <p className="text-sm font-medium">Your RSVP</p>
-          <ProgramRSVPButtons
-            current={invite.rsvpStatus}
-            loading={actionLoading}
-            onRsvp={handleRsvp}
-          />
-        </div>
+        <>
+          <div className="hidden md:block space-y-2 pt-2 border-t">
+            <p className="text-sm font-medium">Your RSVP</p>
+            <ProgramRSVPButtons
+              current={invite.rsvpStatus}
+              loading={actionLoading}
+              onRsvp={handleRsvp}
+            />
+          </div>
+          <div className="md:hidden fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-3 py-3">
+            <p className="text-xs font-medium text-muted-foreground mb-2">
+              Your RSVP
+            </p>
+            <ProgramRSVPButtons
+              current={invite.rsvpStatus}
+              loading={actionLoading}
+              onRsvp={handleRsvp}
+            />
+          </div>
+        </>
       )}
 
       {canViewAttendance && (
@@ -362,8 +369,10 @@ export default function ProgramDetailView({
                     "Reject",
                     async () => {
                       await rejectProgram(programId, rejectionReason);
+                      router.replace(backHref);
                     },
                     "Program rejected",
+                    { skipReload: true },
                   )
                 }
               />

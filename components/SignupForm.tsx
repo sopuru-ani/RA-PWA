@@ -250,17 +250,18 @@ function SignupForm({ setLoading, loading, show, email }: Props) {
               <Label htmlFor="password">Password</Label>
             </div>
             <div className="relative">
-              {hidePassword ? (
-                <EyeOff
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 cursor-pointer"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              ) : (
-                <Eye
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 cursor-pointer"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              )}
+              <button
+                type="button"
+                aria-label={hidePassword ? "Show password" : "Hide password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
+                onClick={() => setHidePassword(!hidePassword)}
+              >
+                {hidePassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
               <Input
                 id="password"
                 type={hidePassword ? "password" : "text"}
@@ -340,17 +341,20 @@ function SignupForm({ setLoading, loading, show, email }: Props) {
               <Label htmlFor="confirmPassword">Confirm Password</Label>
             </div>
             <div className="relative">
-              {hideConfirmPassword ? (
-                <EyeOff
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground w-5 h-5 cursor-pointer"
-                  onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
-                />
-              ) : (
-                <Eye
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground w-5 h-5 cursor-pointer"
-                  onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
-                />
-              )}
+              <button
+                type="button"
+                aria-label={
+                  hideConfirmPassword ? "Show confirm password" : "Hide confirm password"
+                }
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
+                onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
+              >
+                {hideConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
               <Input
                 id="confirmPassword"
                 type={hideConfirmPassword ? "password" : "text"}

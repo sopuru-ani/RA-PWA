@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api-client";
 import type {
+  AudienceCandidate,
   CalendarEvent,
   CreateProgramInput,
   Program,
@@ -50,6 +51,33 @@ export async function fetchCalendarEvents(
   const data = await parseJson<{ events: CalendarEvent[] }>(res);
   if (!res.ok) throw new Error(data.msg ?? "Failed to load calendar");
   return data.events ?? [];
+}
+
+export async function fetchAudienceCandidates(params?: {
+  community?: string;
+  q?: string;
+  limit?: number;
+}): Promise<AudienceCandidate[]> {
+  const qs = new URLSearchParams();
+  if (params?.community) qs.set("community", params.community);
+  if (params?.q?.trim()) qs.set("q", params.q.trim());
+  if (params?.limit) qs.set("limit", String(params.limit));
+  const suffix = qs.toString() ? `?${qs}` : "";
+  const res = await apiFetch(`api/programs/audience-candidates${suffix}`, {
+    method: "GET",
+  });
+  const data = await parseJson<{ candidates: AudienceCandidate[] }>(res);
+  if (!res.ok) throw new Error(data.msg ?? "Failed to load staff");
+  return data.candidates ?? [];
+}
+
+export async function fetchProgramCommunityOptions(): Promise<string[]> {
+  const res = await apiFetch("api/programs/community-options", {
+    method: "GET",
+  });
+  const data = await parseJson<{ communities: { name: string }[] }>(res);
+  if (!res.ok) throw new Error(data.msg ?? "Failed to load communities");
+  return (data.communities ?? []).map((c) => c.name);
 }
 
 export async function fetchProgramStats(): Promise<ProgramStats> {

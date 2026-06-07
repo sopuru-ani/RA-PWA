@@ -8,6 +8,7 @@ import ProgramForm from "@/components/programs/ProgramForm";
 import ProgramAttachmentsEditor from "@/components/programs/ProgramAttachmentsEditor";
 import ListSkeleton from "@/components/housing/ListSkeleton";
 import { useNotification } from "@/context/notification-context";
+import { useProgramCommunityOptions } from "@/hooks/use-program-community-options";
 import { fetchProgram, updateProgram } from "@/lib/programs-api";
 import type { CreateProgramInput, Program } from "@/types/programs";
 
@@ -15,19 +16,17 @@ type Props = {
   programId: string;
   backHref: string;
   detailHref: string;
-  communities: string[];
-  allowDepartmentWide?: boolean;
 };
 
 export default function ProgramEditPage({
   programId,
   backHref,
   detailHref,
-  communities,
-  allowDepartmentWide = true,
 }: Props) {
   const router = useRouter();
   const { show } = useNotification();
+  const { communities, loading: communitiesLoading, error: communitiesError } =
+    useProgramCommunityOptions();
   const [program, setProgram] = useState<Program | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -74,33 +73,41 @@ export default function ProgramEditPage({
     }
   }
 
-  if (loading) {
+  if (loading || communitiesLoading) {
     return (
-      <div className="mx-3 py-4">
-        <ListSkeleton rows={6} />
+      <div className="mx-auto max-w-2xl px-3 py-8">
+        <ListSkeleton rows={8} />
       </div>
     );
   }
 
   if (!program) {
     return (
-      <div className="mx-3 py-4 text-sm text-muted-foreground">
+      <div className="mx-auto max-w-2xl px-3 py-8 text-sm text-muted-foreground">
         Program not found.
       </div>
     );
   }
 
+  if (communitiesError) {
+    return (
+      <div className="mx-auto max-w-2xl px-3 py-8 text-sm text-destructive">
+        {communitiesError}
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4 pb-4 mx-3">
+    <div className="mx-auto max-w-2xl space-y-6 px-3 pb-8">
       <Link
         href={backHref}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Programs
+        Back to programs
       </Link>
-      <div>
-        <h1 className="text-xl font-semibold">Edit program</h1>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Edit program</h1>
         <p className="text-sm text-muted-foreground">{program.title}</p>
       </div>
       <ProgramAttachmentsEditor
@@ -124,9 +131,15 @@ export default function ProgramEditPage({
           audience: program.audience,
         }}
         availableCommunities={
-          program.communities.length > 0 ? program.communities : communities
+          program.communities.length > 0
+            ? [
+                ...new Set([
+                  ...program.communities,
+                  ...communities,
+                ]),
+              ]
+            : communities
         }
-        allowDepartmentWide={allowDepartmentWide}
         loading={saving}
         submitLabel="Save changes"
         onSubmit={handleSubmit}

@@ -1,11 +1,10 @@
 import type { HydratedDocument } from "mongoose";
 import type { IUser } from "../../../db/user.model.js";
 import type { IProgram } from "../../../db/program.model.js";
-import { User } from "../../lib/models.js";
-
-function activeStaffFilter(): Record<string, unknown> {
-  return { isActive: true, role: { $in: ["RA", "GA", "SA", "Admin"] } };
-}
+import {
+  resolveStaffUserIds,
+  type StaffRole,
+} from "./community-staff-resolver.service.js";
 
 export async function resolveAudienceUserIds(
   program: Pick<IProgram, "audience" | "communities">,
@@ -14,68 +13,45 @@ export async function resolveAudienceUserIds(
   const programCommunities = communities ?? [];
 
   switch (audience.type) {
-    case "all_staff": {
-      const users = await User.find(activeStaffFilter()).select("_id").lean();
-      return users.map((u) => String(u._id));
-    }
+    case "all_staff":
+      return resolveStaffUserIds({
+        communities: programCommunities,
+        roles: ["RA", "GA", "SA", "Admin"],
+      });
 
-    case "all_ras": {
-      const filter: Record<string, unknown> = {
-        isActive: true,
-        role: "RA",
-      };
-      if (programCommunities.length > 0) {
-        filter.community = { $in: programCommunities };
-      }
-      const users = await User.find(filter).select("_id").lean();
-      return users.map((u) => String(u._id));
-    }
+    case "all_ras":
+      return resolveStaffUserIds({
+        communities: programCommunities,
+        roles: ["RA"],
+      });
 
-    case "all_gas": {
-      const filter: Record<string, unknown> = {
-        isActive: true,
-        role: "GA",
-      };
-      if (programCommunities.length > 0) {
-        filter.community = { $in: programCommunities };
-      }
-      const users = await User.find(filter).select("_id").lean();
-      return users.map((u) => String(u._id));
-    }
+    case "all_gas":
+      return resolveStaffUserIds({
+        communities: programCommunities,
+        roles: ["GA"],
+      });
 
-    case "selected_users": {
+    case "selected_users":
       return (audience.userIds ?? []).map((id) => String(id));
-    }
 
     case "selected_communities": {
-      const targetCommunities = programCommunities;
-      if (targetCommunities.length === 0) {
+      if (programCommunities.length === 0) {
         return [];
       }
-
-      const users = await User.find({
-        isActive: true,
-        role: { $in: ["RA", "GA", "SA"] },
-        community: { $in: targetCommunities },
-      })
-        .select("_id")
-        .lean();
-      return users.map((u) => String(u._id));
+      return resolveStaffUserIds({
+        communities: programCommunities,
+        roles: ["RA", "GA", "SA"],
+      });
     }
 
     case "community_staff": {
-      const roles = audience.roles?.length
+      const roles: StaffRole[] = audience.roles?.length
         ? audience.roles
-        : (["RA", "GA", "SA"] as const);
-      const filter: Record<string, unknown> = {
-        isActive: true,
-        role: { $in: roles },
-      };
-      if (programCommunities.length > 0) {
-        filter.community = { $in: programCommunities };
-      }
-      const users = await User.find(filter).select("_id").lean();
-      return users.map((u) => String(u._id));
+        : ["RA", "GA", "SA"];
+      return resolveStaffUserIds({
+        communities: programCommunities,
+        roles,
+      });
     }
 
     default:
@@ -84,19 +60,8 @@ export async function resolveAudienceUserIds(
 }
 
 export function assertCommunitiesInScope(
-  user: HydratedDocument<IUser>,
-  communities: string[],
+  _user: HydratedDocument<IUser>,
+  _communities: string[],
 ): void {
-  if (user.role === "Admin") return;
-  if (communities.length === 0) return;
-
-  const allowed = user.community ?? [];
-  const outOfScope = communities.filter((c) => !allowed.includes(c));
-  if (outOfScope.length > 0) {
-    const err = new Error(
-      `Communities out of scope: ${outOfScope.join(", ")}`,
-    ) as Error & { statusCode: number };
-    err.statusCode = 403;
-    throw err;
-  }
+  // Program hosts may invite any community; audience is not limited by creator role.
 }

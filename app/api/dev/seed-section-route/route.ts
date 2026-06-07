@@ -11,37 +11,37 @@ export async function POST(req: NextRequest) {
         community: "Student Apartments",
         section: "Student Apartment 1",
         raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
+        gaEmail: "qrmanager.app@gmail.com",
       },
       {
         community: "Student Apartments",
         section: "Student Apartment 2",
         raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
+        gaEmail: "qrmanager.app@gmail.com",
       },
       {
         community: "Student Apartments",
         section: "Student Apartment 3",
         raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
+        gaEmail: "qrmanager.app@gmail.com",
       },
       {
         community: "Student Apartments",
         section: "Student Apartment 4",
         raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
+        gaEmail: "qrmanager.app@gmail.com",
       },
       {
         community: "Student Apartments",
         section: "Student Apartment 5",
         raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
+        gaEmail: "qrmanager.app@gmail.com",
       },
       {
         community: "Student Apartments",
         section: "Student Apartment 6",
         raEmail: "smani@umes.edu",
-        gaEmail: "akbonsu@umes.edu",
+        gaEmail: "qrmanager.app@gmail.com",
       },
     ];
 

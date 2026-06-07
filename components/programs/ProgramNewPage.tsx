@@ -5,25 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ProgramForm from "@/components/programs/ProgramForm";
+import ListSkeleton from "@/components/housing/ListSkeleton";
 import { useNotification } from "@/context/notification-context";
+import { useProgramCommunityOptions } from "@/hooks/use-program-community-options";
 import { createProgram } from "@/lib/programs-api";
 import type { CreateProgramInput } from "@/types/programs";
 
 type Props = {
   backHref: string;
   detailBasePath: string;
-  communities: string[];
-  allowDepartmentWide?: boolean;
 };
 
-export default function ProgramNewPage({
-  backHref,
-  detailBasePath,
-  communities,
-  allowDepartmentWide = true,
-}: Props) {
+export default function ProgramNewPage({ backHref, detailBasePath }: Props) {
   const router = useRouter();
   const { show } = useNotification();
+  const { communities, loading: communitiesLoading, error } =
+    useProgramCommunityOptions();
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(input: CreateProgramInput) {
@@ -45,26 +42,32 @@ export default function ProgramNewPage({
   }
 
   return (
-    <div className="space-y-4 pb-4 mx-3">
+    <div className="mx-auto max-w-2xl space-y-6 px-3 pb-8">
       <Link
         href={backHref}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Programs
+        Back to programs
       </Link>
-      <div>
-        <h1 className="text-xl font-semibold">New program</h1>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight">New program</h1>
         <p className="text-sm text-muted-foreground">
-          Save as draft, then submit for admin approval
+          Save as a draft, then submit for admin approval when ready.
         </p>
       </div>
-      <ProgramForm
-        availableCommunities={communities}
-        allowDepartmentWide={allowDepartmentWide}
-        loading={loading}
-        onSubmit={handleSubmit}
-      />
+
+      {communitiesLoading ? (
+        <ListSkeleton rows={8} />
+      ) : error ? (
+        <p className="text-sm text-destructive">{error}</p>
+      ) : (
+        <ProgramForm
+          availableCommunities={communities}
+          loading={loading}
+          onSubmit={handleSubmit}
+        />
+      )}
     </div>
   );
 }

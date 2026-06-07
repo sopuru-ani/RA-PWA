@@ -31,7 +31,10 @@ export default function ProgramsDayEventsSheet({
         <SheetHeader>
           <SheetTitle>{formatDate(selectedDate)}</SheetTitle>
         </SheetHeader>
-        <div className="overflow-y-auto flex-1 px-4 pb-6 max-h-[70dvh]">
+        <div
+          key={selectedDate}
+          className="overflow-y-auto flex-1 px-4 pb-6 max-h-[70dvh]"
+        >
           <ProgramsDayEventList events={events} detailPath={detailPath} />
         </div>
       </SheetContent>

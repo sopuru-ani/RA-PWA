@@ -7,6 +7,8 @@ import type { RsvpStatus, AttendanceStatus } from "../../db/programInvite.model.
 import { getProgramConflicts } from "../services/programs/program-conflicts.service.js";
 import { exportAttendanceCsv } from "../services/programs/program-export.service.js";
 import { sendDueProgramReminders } from "../services/programs/program-reminder.service.js";
+import { listAudienceCandidates } from "../services/programs/audience-candidates.service.js";
+import { listProgramCommunityOptions } from "../services/programs/program-communities.service.js";
 import { Program } from "../lib/models.js";
 
 function parseCreateInput(
@@ -232,6 +234,40 @@ export async function getCalendar(
 
   const events = await programService.getCalendarEvents(dbUser, from, to);
   res.json({ msg: "OK", events });
+}
+
+export async function getAudienceCandidates(
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  await connectDB();
+  const dbUser = req.dbUser;
+  if (!dbUser) {
+    res.status(401).json({ msg: "Unauthorized" });
+    return;
+  }
+
+  const community = req.query.community as string | undefined;
+  const q = req.query.q as string | undefined;
+  const limitRaw = req.query.limit as string | undefined;
+  const limit = limitRaw ? parseInt(limitRaw, 10) : undefined;
+
+  const candidates = await listAudienceCandidates(dbUser, {
+    community: community || undefined,
+    q: q || undefined,
+    limit: Number.isFinite(limit) ? limit : undefined,
+  });
+
+  res.json({ msg: "OK", candidates });
+}
+
+export async function getCommunityOptions(
+  _req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> {
+  await connectDB();
+  const communities = await listProgramCommunityOptions();
+  res.json({ msg: "OK", communities });
 }
 
 export async function getProgram(

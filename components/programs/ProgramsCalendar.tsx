@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProgramsCalendarGrid from "@/components/programs/ProgramsCalendarGrid";
@@ -18,6 +19,7 @@ type Props = {
 
 export default function ProgramsCalendar({ detailPath }: Props) {
   const router = useRouter();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const [view, setView] = useState<"month" | "week">("month");
   const [events, setEvents] = useState<DomusCalendarEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState(todayDateString);
@@ -49,14 +51,18 @@ export default function ProgramsCalendar({ detailPath }: Props) {
     loadEvents();
   }, [loadEvents]);
 
+  useEffect(() => {
+    if (isDesktop) setSheetOpen(false);
+  }, [isDesktop]);
+
   function handleDateSelect(date: string) {
     setSelectedDate(date);
-    setSheetOpen(true);
+    if (!isDesktop) setSheetOpen(true);
   }
 
   function handleMoreClick(date: string, list: DomusCalendarEvent[]) {
     setSelectedDate(date);
-    if (list.length > 0) {
+    if (!isDesktop && list.length > 0) {
       setSheetOpen(true);
     }
   }
@@ -99,13 +105,15 @@ export default function ProgramsCalendar({ detailPath }: Props) {
         />
       )}
 
-      <ProgramsDayEventsSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        selectedDate={selectedDate}
-        events={dayEvents}
-        detailPath={detailPath}
-      />
+      {!isDesktop && (
+        <ProgramsDayEventsSheet
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+          selectedDate={selectedDate}
+          events={dayEvents}
+          detailPath={detailPath}
+        />
+      )}
     </div>
   );
 }

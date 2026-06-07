@@ -86,7 +86,7 @@ export default function ProgramAttachmentsEditor({
           {attachments.map((a) => (
             <li
               key={a.id}
-              className="flex items-center justify-between gap-2 rounded-md border p-2 text-sm"
+              className="flex items-center justify-between gap-2 rounded-md bg-muted/40 px-2 py-2 text-sm"
             >
               <a
                 href={a.bucket.startsWith("http") ? a.bucket : undefined}
@@ -115,7 +115,7 @@ export default function ProgramAttachmentsEditor({
       )}
 
       {editable && (
-        <form onSubmit={handleAdd} className="space-y-2 border-t pt-3">
+        <form onSubmit={handleAdd} className="space-y-2 pt-2">
           <div className="space-y-1">
             <Label htmlFor="att-name">Label</Label>
             <Input

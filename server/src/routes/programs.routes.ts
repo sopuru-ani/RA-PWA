@@ -11,6 +11,14 @@ router.get("/stats", asyncHandler(programsController.getProgramStats));
 router.get("/monitoring", asyncHandler(programsController.listMonitoringPrograms));
 router.get("/pending", asyncHandler(programsController.listPendingApproval));
 router.get("/calendar", asyncHandler(programsController.getCalendar));
+router.get(
+  "/audience-candidates",
+  asyncHandler(programsController.getAudienceCandidates),
+);
+router.get(
+  "/community-options",
+  asyncHandler(programsController.getCommunityOptions),
+);
 router.get("/conflicts", asyncHandler(programsController.getConflicts));
 router.post(
   "/reminders/send",

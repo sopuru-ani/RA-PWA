@@ -107,6 +107,14 @@ export type ProgramStats = {
   pendingApprovalCount?: number;
 };
 
+export type AudienceCandidate = {
+  id: string;
+  fullName: string;
+  email: string;
+  role: string;
+  communities: string[];
+};
+
 export type CreateProgramInput = {
   title: string;
   description: string;
